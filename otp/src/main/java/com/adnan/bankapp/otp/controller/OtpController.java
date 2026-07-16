@@ -31,7 +31,7 @@ public class OtpController {
 
     @PostMapping("/validate")
     public ResponseEntity<Boolean> validate(@Valid @RequestBody ValidateOtpRequest request){
-        boolean valid = otpService.validate(request);
+        otpService.validate(request);
         return null;
     }
 
