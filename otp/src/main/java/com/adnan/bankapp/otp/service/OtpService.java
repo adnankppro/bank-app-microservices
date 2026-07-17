@@ -2,9 +2,9 @@ package com.adnan.bankapp.otp.service;
 
 import com.adnan.bankapp.otp.dto.OtpRequest;
 import com.adnan.bankapp.otp.dto.ValidateOtpRequest;
-import com.adnan.bankapp.otp.exception.InvalidOTPException;
-import com.adnan.bankapp.otp.exception.OtpGenerateLimitExceededException;
-import com.adnan.bankapp.otp.exception.OtpValidateLimitExceededException;
+import com.bankapp.common.exception.InvalidOtpException;
+import com.bankapp.common.exception.OtpGenerateLimitExceededException;
+import com.bankapp.common.exception.OtpValidateLimitExceededException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +79,7 @@ public class OtpService {
                 redisTemplate.expire(failedAttemptKey, Duration.ofMinutes(30));
             }
             log.warn("OTP validation failed | reason: Invalid OTP | email: {} | purpose: {}", request.email(), request.purpose());
-            throw new InvalidOTPException("Invalid OTP");
+            throw new InvalidOtpException("Invalid OTP");
         }
 
         final String recentCountKey = "otp:count:recent"+request.email()+":"+request.purpose();
