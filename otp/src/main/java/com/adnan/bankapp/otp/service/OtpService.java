@@ -2,6 +2,7 @@ package com.adnan.bankapp.otp.service;
 
 import com.adnan.bankapp.otp.dto.OtpRequest;
 import com.adnan.bankapp.otp.dto.ValidateOtpRequest;
+import com.adnan.bankapp.otp.exception.InvalidOTPException;
 import com.adnan.bankapp.otp.exception.OtpGenerateLimitExceededException;
 import com.adnan.bankapp.otp.exception.OtpValidateLimitExceededException;
 import jakarta.validation.Valid;
@@ -58,7 +59,7 @@ public class OtpService {
     }
 
 
-    public boolean validate(@Valid ValidateOtpRequest request) {
+    public void validate(@Valid ValidateOtpRequest request) {
         log.info("Validating OTP | email: {} | purpose: {}", request.email(), request.purpose());
 
         final String otpKey = "otp:"+request.email()+":"+request.purpose();
@@ -68,7 +69,7 @@ public class OtpService {
         if(failedAttempt!= null && Long.parseLong(failedAttempt) >= 5){
             redisTemplate.delete(otpKey);
             log.warn("OTP validation failed | reason: Too many attempts | email: {} | purpose: {}", request.email(), request.purpose());
-            throw new OtpValidateLimitExceededException("Too many attempts");
+            throw new OtpValidateLimitExceededException("Too many attempts. Please try again later.");
         }
 
         String otp = redisTemplate.opsForValue().get(otpKey);
@@ -78,7 +79,7 @@ public class OtpService {
                 redisTemplate.expire(failedAttemptKey, Duration.ofMinutes(30));
             }
             log.warn("OTP validation failed | reason: Invalid OTP | email: {} | purpose: {}", request.email(), request.purpose());
-            return false;
+            throw new InvalidOTPException("Invalid OTP");
         }
 
         final String recentCountKey = "otp:count:recent"+request.email()+":"+request.purpose();
@@ -87,7 +88,5 @@ public class OtpService {
         redisTemplate.delete(failedAttemptKey);
 
         log.info("OTP validated successfully | email: {} | purpose: {}", request.email(), request.purpose());
-
-        return true;
     }
 }
