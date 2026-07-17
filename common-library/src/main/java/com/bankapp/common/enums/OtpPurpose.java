@@ -1,6 +1,6 @@
 package com.bankapp.common.enums;
 
-public enum OTP_PURPOSE {
+public enum OtpPurpose {
     REGISTER,
     CHANGE_PASSWORD
 }

@@ -1,4 +1,4 @@
-package com.bankapp.common.response;
+package com.bankapp.common.dto;
 
 import com.bankapp.common.enums.ErrorCode;
 
