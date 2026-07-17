@@ -2,7 +2,7 @@ package com.bankapp.common.feign;
 
 import com.bankapp.common.enums.ErrorCode;
 import com.bankapp.common.exception.*;
-import com.bankapp.common.response.ErrorResponse;
+import com.bankapp.common.dto.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
