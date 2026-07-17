@@ -10,12 +10,14 @@ import com.adnan.bankapp.authentication.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@EnableFeignClients
 public class AuthenticationService {
 
     private final RedisTemplate<String, RegisterRequest> redisTemplate;
@@ -31,7 +33,7 @@ public class AuthenticationService {
         String key = "register:"+request.email();
         redisTemplate.opsForValue().set(key, request);
         // create otp
-        // publish successful register Kafka event
+
         //logging unit test
     }
 }
