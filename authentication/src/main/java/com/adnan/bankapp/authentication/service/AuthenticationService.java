@@ -1,13 +1,11 @@
 package com.adnan.bankapp.authentication.service;
 
 import com.adnan.bankapp.authentication.dto.RegisterRequest;
-import com.adnan.bankapp.authentication.dto.RegisterResponse;
-import com.adnan.bankapp.authentication.entity.UserCredentials;
-import com.adnan.bankapp.authentication.enums.Role;
-import com.adnan.bankapp.authentication.enums.UserStatus;
 import com.adnan.bankapp.authentication.exception.EmailAlreadyUserException;
+import com.adnan.bankapp.authentication.feign.OtpServiceClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
-import jakarta.validation.Valid;
+import com.bankapp.common.dto.OtpGenerateRequest;
+import com.bankapp.common.enums.OtpPurpose;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -22,6 +20,7 @@ public class AuthenticationService {
 
     private final RedisTemplate<String, RegisterRequest> redisTemplate;
     private final UserRepository repository;
+    private final OtpServiceClient otpServiceClient;
 
     public void register(RegisterRequest request) {
         log.info("Checking email existence for: {}", request.email());
@@ -31,8 +30,12 @@ public class AuthenticationService {
         }
         // check branch exists to register
         String key = "register:"+request.email();
-        redisTemplate.opsForValue().set(key, request);
+
         // create otp
+        otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
+        
+        redisTemplate.opsForValue().set(key, request);
+
 
         //logging unit test
     }
