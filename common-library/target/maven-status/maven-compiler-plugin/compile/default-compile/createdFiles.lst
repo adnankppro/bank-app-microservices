@@ -8,6 +8,7 @@ com\bankapp\common\exception\OtpValidateLimitExceededException.class
 com\bankapp\common\exception\EmailAlreadyExistsException.class
 com\bankapp\common\exception\ServiceException.class
 com\bankapp\common\feign\CustomErrorDecoder.class
+com\bankapp\common\exception\BranchNotFoundException.class
 com\bankapp\common\dto\OtpValidateRequest.class
 com\bankapp\common\enums\OtpPurpose.class
 com\bankapp\common\exception\OtpGenerateLimitExceededException.class

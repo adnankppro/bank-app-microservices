@@ -43,6 +43,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
             case EMAIL_ALREADY_EXISTS -> new EmailAlreadyExistsException(message);
             case OTP_GENERATE_LIMIT_EXCEEDED -> new OtpGenerateLimitExceededException(message);
             case OTP_VALIDATE_LIMIT_EXCEEDED -> new OtpValidateLimitExceededException(message);
+            case BRANCH_NOT_FOUND -> new BranchNotFoundException(message);
             default -> new ServiceException(message);
         };
     }

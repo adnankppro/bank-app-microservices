@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: branch
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/branch_db
+    username: admin
+    password: secret
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Kolkata
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8083

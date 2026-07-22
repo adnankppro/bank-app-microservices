@@ -4,6 +4,7 @@ D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\OtpPurpose.java
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\BankAppException.java
+D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\BranchNotFoundException.java
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\EmailAlreadyExistsException.java
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidOtpException.java
 D:\my projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpGenerateLimitExceededException.java

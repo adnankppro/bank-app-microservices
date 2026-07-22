@@ -11,5 +11,8 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS,
 
     //Service
-    SERVICE_ERROR
+    SERVICE_ERROR,
+
+    //branch
+    BRANCH_NOT_FOUND
 }
