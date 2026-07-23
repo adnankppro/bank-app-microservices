@@ -1,6 +1,7 @@
 package com.adnan.bankapp.otp.service;
 
 
+import com.adnan.bankapp.otp.feign.NotificationClient;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.exception.InvalidOtpException;
@@ -24,6 +25,7 @@ public class OtpService {
     private final StringRedisTemplate redisTemplate;
     private final PasswordEncoder passwordEncoder;
     private final SecureRandom secureRandom = new SecureRandom();
+    private final NotificationClient notificationClient;
 
     public void generate(OtpGenerateRequest request) {
         
@@ -55,6 +57,7 @@ public class OtpService {
         redisTemplate.opsForValue().set(otpKey, passwordEncoder.encode(otp), Duration.ofSeconds(300));
         log.info("OTP generated successfully | email: {} | purpose: {}", request.email(), request.otpPurpose());
 
+        notificationClient.sendOtp();
         // send notification using feign (as OTP should not be async because it necessary to get before ttl expires)
     }
 
