@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-    EmailTemplateService emailTemplateService;
+    private final EmailTemplateService emailTemplateService;
 
     public void sendOtpMail(OtpGeneratedEvent event) {
         try {

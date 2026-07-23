@@ -1,9 +1,11 @@
 package com.adnan.bankapp.otp.service;
 
 
-import com.adnan.bankapp.otp.feign.NotificationClient;
+
+import com.adnan.bankapp.otp.producer.OtpEventProducer;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
+import com.bankapp.common.event.OtpGeneratedEvent;
 import com.bankapp.common.exception.InvalidOtpException;
 import com.bankapp.common.exception.OtpGenerateLimitExceededException;
 import com.bankapp.common.exception.OtpValidateLimitExceededException;
@@ -25,7 +27,7 @@ public class OtpService {
     private final StringRedisTemplate redisTemplate;
     private final PasswordEncoder passwordEncoder;
     private final SecureRandom secureRandom = new SecureRandom();
-    private final NotificationClient notificationClient;
+    private final OtpEventProducer otpEventProducer;
 
     public void generate(OtpGenerateRequest request) {
         
@@ -57,8 +59,8 @@ public class OtpService {
         redisTemplate.opsForValue().set(otpKey, passwordEncoder.encode(otp), Duration.ofSeconds(300));
         log.info("OTP generated successfully | email: {} | purpose: {}", request.email(), request.otpPurpose());
 
-        notificationClient.sendOtp();
-        // send notification using feign (as OTP should not be async because it necessary to get before ttl expires)
+        otpEventProducer.publish(new OtpGeneratedEvent(request.email(), otp, request.otpPurpose()));
+        //NO (im using Kafka now) send notification using feign (as OTP should not be async because it necessary to get before ttl expires)
     }
 
 

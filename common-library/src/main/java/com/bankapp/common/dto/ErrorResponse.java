@@ -6,5 +6,5 @@ import java.time.LocalDateTime;
 
 public record ErrorResponse(String message,
                             ErrorCode errorCode,
-                            LocalDateTime timestamp) {
+                            String timestamp) {
 }
