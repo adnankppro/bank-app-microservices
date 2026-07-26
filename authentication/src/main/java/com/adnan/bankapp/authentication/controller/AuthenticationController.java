@@ -35,7 +35,6 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterRequest request){
         log.info("Register request received for email: {}", request.email());
         service.register(request);
-        log.info("Register OTP send for email: {}", request.email());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true, "Registered successfully", "ok", LocalDateTime.now()));
     }
 

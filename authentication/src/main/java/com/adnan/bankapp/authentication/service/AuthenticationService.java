@@ -33,7 +33,7 @@ public class AuthenticationService {
 
         // create otp
         otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
-        
+        log.info("Register OTP send for email: {}", request.email());
         redisTemplate.opsForValue().set(key, request);
 
 
