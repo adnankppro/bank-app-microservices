@@ -34,8 +34,8 @@ public class BranchController {
     }
 
     @GetMapping("/exists/{branchCode}")
-    public ResponseEntity<Boolean> exists(@PathVariable String branchCode){
-        return ResponseEntity.ok(service.exists(branchCode));
+    public void exists(@PathVariable String branchCode){
+        service.exists(branchCode);
     }
 
 }

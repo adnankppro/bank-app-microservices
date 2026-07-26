@@ -26,13 +26,14 @@ public class BranchService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "branch::exists", key = "#branchCode")
-    public Boolean exists(String branchCode) {
-        return repository.existsByBranchCode(branchCode);
+    public void exists(String branchCode) {
+        if(!repository.existsByBranchCode(branchCode)){
+            throw new BranchNotFoundException("No branch with branch code: "+branchCode);
+        }
     }
 
-    /*@Transactional(readOnly = true)
-    @Cacheable(value = "branch", key = "#branchCode")*/
+    @Transactional(readOnly = true)
+    @Cacheable(value = "branch", key = "#branchCode")
     public BranchResponse getByBranchCode(String branchCode) {
         log.debug("Fetching branch details | branchCode: {}", branchCode);
         return branchMapper.toResponse(repository.getByBranchCode(branchCode).orElseThrow(() ->{

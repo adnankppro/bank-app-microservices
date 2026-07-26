@@ -29,14 +29,14 @@ public class AuthenticationService {
             throw new EmailAlreadyUserException("This is Email is already registered.");
         }
         // check branch exists to register
-        String key = "register:"+request.email();
+
 
         // create otp
         otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
         log.info("Register OTP send for email: {}", request.email());
+
+        String key = "register:"+request.email();
         redisTemplate.opsForValue().set(key, request);
 
-
-        //logging unit test
     }
 }
