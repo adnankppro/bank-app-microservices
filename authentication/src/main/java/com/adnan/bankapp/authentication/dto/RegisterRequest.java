@@ -11,6 +11,6 @@ public record RegisterRequest(
         @NotBlank @Email String email,
         @NotBlank String address,
         @NotNull Date dateOfBirth,
-        @NotNull Long homeBranch
+        @NotNull String branchCode
         ) {
 }

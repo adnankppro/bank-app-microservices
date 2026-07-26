@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient("OTP-SERVICE")
-public interface OtpServiceClient {
+public interface OtpFeignClient {
 
     @PostMapping("/otp/generate")
     public void generate(@RequestBody OtpGenerateRequest request);

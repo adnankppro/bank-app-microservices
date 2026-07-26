@@ -60,8 +60,7 @@ public class OtpService {
         log.info("OTP generated successfully | email: {} | purpose: {}", request.email(), request.otpPurpose());
 
         otpEventProducer.publish(new OtpGeneratedEvent(request.email(), otp, request.otpPurpose()));
-        //NO (im using Kafka now) send notification using feign (as OTP should not be async because it necessary to get before ttl expires)
-    }
+   }
 
 
     public void validate(OtpValidateRequest request) {
