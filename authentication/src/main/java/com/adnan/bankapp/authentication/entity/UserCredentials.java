@@ -28,8 +28,8 @@ public class UserCredentials {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public UserCredentials(RegisterRequest request){
-        this.email = request.email();
+    public UserCredentials(String email){
+        this.email = email;
     }
 
 }

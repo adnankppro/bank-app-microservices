@@ -69,8 +69,8 @@ public class OtpService {
         final String otpKey = "otp:"+request.email()+":"+request.otpPurpose();
         final String failedAttemptKey = "otp:failedAttempt"+request.email()+":"+request.otpPurpose();
         
-        String failedAttempt = redisTemplate.opsForValue().get(failedAttemptKey);
-        if(failedAttempt!= null && Long.parseLong(failedAttempt) >= 5){
+        Long failedAttempt = redisTemplate.opsForValue().increment(failedAttemptKey);
+        if(failedAttempt!= null && failedAttempt > 5){
             redisTemplate.delete(otpKey);
             log.warn("OTP validation failed | reason: Too many attempts | email: {} | purpose: {}", request.email(), request.otpPurpose());
             throw new OtpValidateLimitExceededException("Too many attempts. Please try again later.");
@@ -78,9 +78,8 @@ public class OtpService {
 
         String otp = redisTemplate.opsForValue().get(otpKey);
         if (otp == null || !passwordEncoder.matches(request.otp(), otp)){
-            Long failedAttempts = redisTemplate.opsForValue().increment(failedAttemptKey);
-            if (failedAttempts != null && failedAttempts == 1){
-                redisTemplate.expire(failedAttemptKey, Duration.ofMinutes(30));
+            if (failedAttempt != null && failedAttempt == 1){
+                redisTemplate.expire(failedAttemptKey, Duration.ofMinutes(5));
             }
             log.warn("OTP validation failed | reason: Invalid OTP | email: {} | purpose: {}", request.email(), request.otpPurpose());
             throw new InvalidOtpException("Invalid OTP");

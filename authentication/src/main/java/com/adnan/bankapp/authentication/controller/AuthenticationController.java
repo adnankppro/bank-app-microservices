@@ -2,7 +2,7 @@ package com.adnan.bankapp.authentication.controller;
 
 import com.adnan.bankapp.authentication.dto.ApiResponse;
 import com.adnan.bankapp.authentication.dto.RegisterRequest;
-import com.adnan.bankapp.authentication.dto.RegisterResponse;
+import com.adnan.bankapp.authentication.dto.VerifyRegisterRequest;
 import com.adnan.bankapp.authentication.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,6 +36,36 @@ public class AuthenticationController {
         log.info("Register request received for email: {}", request.email());
         service.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true, "Registered successfully", "ok", LocalDateTime.now()));
+    }
+
+    @PostMapping("/register/verify")
+    public void verifyRegister(@Valid @RequestBody VerifyRegisterRequest request){
+        service.verifyRegister(request);
+    }
+
+    /*@PostMapping("/password/setup")
+    public void setupPassword(@RequestBody PasswordSetupRequest request){
+
+    }
+
+    @PostMapping("/password/setup/verify")
+    public void verifyPasswordSetup(@RequestBody VerifyPasswordSetupRequest request){
+
+    }*/
+
+    @PostMapping("/login")
+    public void login(){
+
+    }
+
+    @PostMapping("/refresh")
+    public void refresh(){
+
+    }
+
+    @PatchMapping("/password/change")
+    public void changePassword(){
+
     }
 
     @GetMapping("/hello")
