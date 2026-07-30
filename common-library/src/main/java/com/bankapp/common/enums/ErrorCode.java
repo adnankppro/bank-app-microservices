@@ -9,6 +9,8 @@ public enum ErrorCode {
 
     //Auth
     EMAIL_ALREADY_EXISTS,
+    INCORRECT_PASSWORD,
+    UNAUTHORIZED_REQUEST,
 
     //Service
     SERVICE_ERROR,

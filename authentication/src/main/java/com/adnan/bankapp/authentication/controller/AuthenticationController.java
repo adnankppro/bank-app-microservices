@@ -1,8 +1,6 @@
 package com.adnan.bankapp.authentication.controller;
 
-import com.adnan.bankapp.authentication.dto.ApiResponse;
-import com.adnan.bankapp.authentication.dto.RegisterRequest;
-import com.adnan.bankapp.authentication.dto.VerifyRegisterRequest;
+import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -33,7 +31,6 @@ public class AuthenticationController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request")
     })
     public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterRequest request){
-        log.info("Register request received for email: {}", request.email());
         service.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true, "Registered successfully", "ok", LocalDateTime.now()));
     }
@@ -43,15 +40,15 @@ public class AuthenticationController {
         service.verifyRegister(request);
     }
 
-    /*@PostMapping("/password/setup")
+    @PostMapping("/password/setup")
     public void setupPassword(@RequestBody PasswordSetupRequest request){
-
+        service.generatePasswordOtp(request);
     }
 
     @PostMapping("/password/setup/verify")
     public void verifyPasswordSetup(@RequestBody VerifyPasswordSetupRequest request){
-
-    }*/
+        service.setPassword(request);
+    }
 
     @PostMapping("/login")
     public void login(){
