@@ -2,6 +2,7 @@ package com.adnan.bankapp.profile.service;
 
 import com.adnan.bankapp.profile.dto.ProfileResponse;
 import com.adnan.bankapp.profile.entity.Profile;
+import com.adnan.bankapp.profile.exception.ProfileNotFoundException;
 import com.adnan.bankapp.profile.mapper.ProfileMapper;
 import com.adnan.bankapp.profile.repository.ProfileRepository;
 import com.bankapp.common.dto.CreateProfileRequest;
@@ -29,5 +30,14 @@ public class ProfileService {
         Profile profile = repository.save(profileMapper.toProfile(request));
         log.info("Profile created successfully | email: {} | id: {}", profile.getEmail(), profile.getId());
         return profileMapper.toResponse(profile);
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileResponse getById(Long id) {
+        log.info("Profile fetch request received | id: {}", id);
+        return profileMapper.toResponse(repository.findById(id).orElseThrow(() -> {
+            log.warn("Profile not found | id: {}", id);
+            return new ProfileNotFoundException("Profile not found | id: "+id);
+        }));
     }
 }

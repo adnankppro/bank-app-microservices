@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +22,9 @@ public class ProfileController {
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(service.create(request));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfileResponse> getById(@PathVariable Long id){
+        return ResponseEntity.ok(service.getById(id));
+    }
 
 }

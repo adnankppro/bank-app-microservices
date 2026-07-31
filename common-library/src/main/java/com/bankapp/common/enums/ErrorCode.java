@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     //profile
     PROFILE_ALREADY_EXISTS,
+    PROFILE_NOT_FOUND,
 
     //Service
     SERVICE_ERROR,
