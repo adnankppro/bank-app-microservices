@@ -1,4 +1,4 @@
-package com.adnan.bankapp.user_profile;
+package com.adnan.bankapp.profile;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

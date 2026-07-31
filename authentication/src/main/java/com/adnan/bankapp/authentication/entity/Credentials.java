@@ -1,15 +1,14 @@
 package com.adnan.bankapp.authentication.entity;
 
-import com.adnan.bankapp.authentication.dto.RegisterRequest;
+
 import com.adnan.bankapp.authentication.enums.Role;
-import com.adnan.bankapp.authentication.enums.UserStatus;
+import com.bankapp.common.enums.UserStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
 @Data
-public class UserCredentials {
+public class Credentials {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,7 @@ public class UserCredentials {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public UserCredentials(String email){
+    public Credentials(String email){
         this.email = email;
     }
 

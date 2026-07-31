@@ -4,9 +4,8 @@ import com.adnan.bankapp.authentication.dto.PasswordSetupRequest;
 import com.adnan.bankapp.authentication.dto.RegisterRequest;
 import com.adnan.bankapp.authentication.dto.VerifyPasswordSetupRequest;
 import com.adnan.bankapp.authentication.dto.VerifyRegisterRequest;
-import com.adnan.bankapp.authentication.entity.UserCredentials;
+import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.enums.Role;
-import com.adnan.bankapp.authentication.enums.UserStatus;
 import com.adnan.bankapp.authentication.exception.DataNotFoundException;
 import com.adnan.bankapp.authentication.exception.EmailAlreadyExistsException;
 import com.adnan.bankapp.authentication.exception.IncorrectPasswordException;
@@ -17,6 +16,7 @@ import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
+import com.bankapp.common.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -75,8 +75,8 @@ public class AuthenticationService {
 
         otpFeignClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.REGISTER, request.otp()));
 
-        UserCredentials user = new UserCredentials(request.email());
-        user.setStatus(UserStatus.PROCESSING);
+        Credentials user = new Credentials(request.email());
+        user.setStatus(UserStatus.PENDING_ADMIN_VERIFICATION);
         user.setRole(Role.USER);
         repository.save(user);
 
@@ -110,7 +110,7 @@ public class AuthenticationService {
             throw new IncorrectPasswordException("Passwords do not match");
         }
 
-        UserCredentials user = repository.getByEmailAndStatus(request.email(), UserStatus.PENDING_PASSWORD_GENERATION).orElseThrow(() -> {
+        Credentials user = repository.getByEmailAndStatus(request.email(), UserStatus.PENDING_PASSWORD_GENERATION).orElseThrow(() -> {
             log.warn("Password setup failed | reason: invalid request | email: {}", request.email());
             return new UnauthorizedRequestException("Invalid request");
         });
