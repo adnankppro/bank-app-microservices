@@ -1,4 +1,4 @@
-D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\CreateProfileDto.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\CreateProfileRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\ErrorResponse.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpGenerateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpValidateRequest.java
@@ -13,5 +13,6 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidOtpException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpGenerateLimitExceededException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpValidateLimitExceededException.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ProfileAlreadyExistsException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ServiceException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\feign\CustomErrorDecoder.java

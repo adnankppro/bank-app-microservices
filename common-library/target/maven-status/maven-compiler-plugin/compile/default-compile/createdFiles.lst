@@ -1,13 +1,14 @@
+com\bankapp\common\dto\CreateProfileRequest.class
 com\bankapp\common\exception\BankAppException.class
 com\bankapp\common\exception\InvalidOtpException.class
 com\bankapp\common\dto\OtpGenerateRequest.class
 com\bankapp\common\enums\ErrorCode.class
 com\bankapp\common\feign\CustomErrorDecoder$1.class
 com\bankapp\common\event\OtpGeneratedEvent.class
+com\bankapp\common\exception\ProfileAlreadyExistsException.class
 com\bankapp\common\enums\UserStatus.class
 com\bankapp\common\dto\ErrorResponse.class
 com\bankapp\common\exception\OtpValidateLimitExceededException.class
-com\bankapp\common\dto\CreateProfileDto.class
 com\bankapp\common\exception\EmailAlreadyExistsException.class
 com\bankapp\common\exception\ServiceException.class
 com\bankapp\common\event\RegisterSuccessfulEvent.class

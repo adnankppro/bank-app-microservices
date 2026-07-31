@@ -12,6 +12,9 @@ public enum ErrorCode {
     INCORRECT_PASSWORD,
     UNAUTHORIZED_REQUEST,
 
+    //profile
+    PROFILE_ALREADY_EXISTS,
+
     //Service
     SERVICE_ERROR,
 

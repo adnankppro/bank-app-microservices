@@ -44,6 +44,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
             case OTP_GENERATE_LIMIT_EXCEEDED -> new OtpGenerateLimitExceededException(message);
             case OTP_VALIDATE_LIMIT_EXCEEDED -> new OtpValidateLimitExceededException(message);
             case BRANCH_NOT_FOUND -> new BranchNotFoundException(message);
+            case PROFILE_ALREADY_EXISTS -> new ProfileAlreadyExistsException(message);
             default -> new ServiceException(message);
         };
     }
