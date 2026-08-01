@@ -1,5 +1,6 @@
 package com.adnan.bankapp.profile.service;
 
+import com.adnan.bankapp.profile.dto.ProfileFilter;
 import com.adnan.bankapp.profile.dto.ProfileResponse;
 import com.adnan.bankapp.profile.entity.Profile;
 import com.adnan.bankapp.profile.exception.ProfileNotFoundException;
@@ -9,6 +10,8 @@ import com.bankapp.common.dto.CreateProfileRequest;
 import com.bankapp.common.exception.ProfileAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,5 +42,10 @@ public class ProfileService {
             log.warn("Profile not found | id: {}", id);
             return new ProfileNotFoundException("Profile not found | id: "+id);
         }));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProfileResponse> getAll(Pageable pageable, ProfileFilter filter) {
+
     }
 }
