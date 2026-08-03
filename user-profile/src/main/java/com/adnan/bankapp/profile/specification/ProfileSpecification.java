@@ -12,8 +12,10 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileSpecification {
+public final class ProfileSpecification {
 
+    //  why static?
+    // no instant variables, no state, no dependencies. Just take input and return output.
     public static Specification<Profile> build(ProfileFilter filter){
 
         return new Specification<Profile>() {
@@ -23,7 +25,7 @@ public class ProfileSpecification {
                 List<Predicate> predicates = new ArrayList<>();
 
                 if( filter.name() != null && !filter.name().isBlank()){
-                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(criteriaBuilder.lower(root.get("name"))),"%"+filter.name().toLowerCase()+"%"));
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),"%"+filter.name().toLowerCase()+"%"));
                 }
 
                 if( filter.address() != null && !filter.address().isBlank()){
@@ -42,6 +44,9 @@ public class ProfileSpecification {
                     predicates.add(criteriaBuilder.equal(root.get("status"),filter.status()));
                 }
 
+                // we need to return Specification, every filter we created using this filter is a Specification
+                // till now it is a List of multiple filter, we have to make all this into one Specification
+                // so what we doing here is convert this list to array (new Predicate[0]) and use cb.and(). So it will be one unit.
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };

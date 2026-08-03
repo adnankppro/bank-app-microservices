@@ -2,16 +2,19 @@ package com.adnan.bankapp.profile.service;
 
 import com.adnan.bankapp.profile.dto.ProfileFilter;
 import com.adnan.bankapp.profile.dto.ProfileResponse;
+import com.adnan.bankapp.profile.dto.UpdateProfileRequest;
 import com.adnan.bankapp.profile.entity.Profile;
 import com.adnan.bankapp.profile.exception.ProfileNotFoundException;
 import com.adnan.bankapp.profile.mapper.ProfileMapper;
 import com.adnan.bankapp.profile.repository.ProfileRepository;
+import com.adnan.bankapp.profile.specification.ProfileSpecification;
 import com.bankapp.common.dto.CreateProfileRequest;
 import com.bankapp.common.exception.ProfileAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +49,22 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public Page<ProfileResponse> getAll(Pageable pageable, ProfileFilter filter) {
+        log.info("Fetch all profile request received | page: {} | size: {}", pageable.getPageNumber(), pageable.getPageSize());
+        Specification<Profile> profileSpecification = ProfileSpecification.build(filter);
+        Page<Profile> profiles = repository.findAll(profileSpecification, pageable);
+        log.info("Profiles fetched successfully");
+        return profiles.map(profileMapper::toResponse);
+    }
 
+    @Transactional
+    public ProfileResponse update(Long id, UpdateProfileRequest request) {
+        log.info("Update request received | id: {}", id);
+        Profile profile = repository.findById(id).orElseThrow(() -> {
+            log.error("Update failed | reason: profile not found | id: {}", id);
+            return new ProfileNotFoundException("Profile not found!");
+        });
+        profileMapper.updateUser(profile, request);
+        log.info("Update completed successfully | id: {}", id);
+        return profileMapper.toResponse(profile);
     }
 }

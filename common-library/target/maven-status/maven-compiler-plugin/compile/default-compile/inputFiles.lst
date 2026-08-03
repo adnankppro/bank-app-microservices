@@ -1,5 +1,6 @@
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\CreateProfileRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\ErrorResponse.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\MyDetails.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpGenerateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpValidateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java

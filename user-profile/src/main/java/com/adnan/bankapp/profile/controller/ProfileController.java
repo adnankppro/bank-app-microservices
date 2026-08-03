@@ -3,8 +3,10 @@ package com.adnan.bankapp.profile.controller;
 
 import com.adnan.bankapp.profile.dto.ProfileFilter;
 import com.adnan.bankapp.profile.dto.ProfileResponse;
+import com.adnan.bankapp.profile.dto.UpdateProfileRequest;
 import com.adnan.bankapp.profile.service.ProfileService;
 import com.bankapp.common.dto.CreateProfileRequest;
+import com.bankapp.common.dto.MyDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,12 +35,21 @@ public class ProfileController {
     }
 
     // get details (self)
+    @GetMapping("/me")
+    public ResponseEntity<ProfileResponse> getMyProfile(@AuthenticationPrincipal MyDetails myDetails){
+        return ResponseEntity.ok(service.getById(myDetails.id()));
+    }
 
     // get all (specification) create ProfileResponseFilter
+    @GetMapping
     public ResponseEntity<Page<ProfileResponse>> getAll(@PageableDefault Pageable pageable, @ModelAttribute ProfileFilter filter){
         return ResponseEntity.ok(service.getAll(pageable, filter));
     }
 
     // update (self)
+    @PatchMapping("/me")
+    public ResponseEntity<ProfileResponse> update(@AuthenticationPrincipal MyDetails myDetails, @RequestBody UpdateProfileRequest request){
+        return ResponseEntity.ok(service.update(myDetails.id(), request));
+    }
 
 }
