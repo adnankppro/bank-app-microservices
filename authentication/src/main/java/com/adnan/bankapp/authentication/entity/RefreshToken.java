@@ -25,4 +25,8 @@ public class RefreshToken {
 
     private boolean revoked;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Credentials user;
+
 }

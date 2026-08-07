@@ -16,6 +16,7 @@ import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
 import com.bankapp.common.enums.UserStatus;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,6 +38,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional(readOnly = true)
     public void register(RegisterRequest request) {
@@ -124,9 +126,10 @@ public class AuthenticationService {
         log.info("Password setup completed successfully | email: {}", request.email());
     }
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, HttpServletResponse response) {
         MyUserDetails myUserDetails = securityService.validate(request);
         String token = jwtService.generate(myUserDetails);
+        refreshTokenService.create(myUserDetails.getId(), response);
         return new LoginResponse("Bearer", token);
     }
 }

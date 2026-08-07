@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 
 public class DataNotFoundException extends BankAppException {
     public DataNotFoundException(String message) {
-        super(message, HttpStatus.NOT_FOUND.value(), ErrorCode.SERVICE_ERROR);
+        super(message, HttpStatus.NOT_FOUND.value(), ErrorCode.DATA_NOT_FOUND);
     }
 }
