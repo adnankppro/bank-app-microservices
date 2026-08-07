@@ -13,7 +13,7 @@ public class MyUserDetails implements UserDetails {
 
     private final Credentials credentials;
 
-    MyUserDetails(Credentials credentials){
+    public MyUserDetails(Credentials credentials){
         this.credentials = credentials;
     }
 

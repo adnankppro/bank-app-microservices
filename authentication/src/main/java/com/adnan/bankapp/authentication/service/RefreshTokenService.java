@@ -2,9 +2,11 @@ package com.adnan.bankapp.authentication.service;
 
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.entity.RefreshToken;
+import com.adnan.bankapp.authentication.exception.InvalidRefreshTokenException;
 import com.adnan.bankapp.authentication.exception.UserIdNotFoundException;
 import com.adnan.bankapp.authentication.repository.RefreshTokenRepository;
 import com.adnan.bankapp.authentication.repository.UserRepository;
+import com.adnan.bankapp.authentication.security.MyUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ public class RefreshTokenService {
         String rawToken = UUID.randomUUID().toString();
 
         RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setUser(userCredentials);
         refreshToken.setTokenId(tokenId);
         refreshToken.setToken(passwordEncoder.encode(rawToken));
         refreshToken.setCreatedAt(now);
@@ -56,5 +59,31 @@ public class RefreshTokenService {
                 .maxAge(Duration.ofDays(14))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        log.info("Refresh token created successfully | userId: {}", id);
+    }
+
+    public MyUserDetails verify(String cookieToken) {
+        if(cookieToken == null){
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        String[] tokenArray = cookieToken.split("\\.");
+        if (tokenArray.length != 2){
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        Instant now = Instant.now();
+        String token = tokenArray[0];
+        String tokenId = tokenArray[1];
+
+        RefreshToken refreshToken = refreshTokenRepository.findValidByTokenId(tokenId, now).orElseThrow(() ->
+                new InvalidRefreshTokenException("Invalid refresh token"));
+
+        if (!passwordEncoder.matches(token, refreshToken.getToken())){
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        return new MyUserDetails(refreshToken.getUser());
     }
 }

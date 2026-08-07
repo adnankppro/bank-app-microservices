@@ -2,6 +2,7 @@ package com.adnan.bankapp.authentication.controller;
 
 import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.service.AuthenticationService;
+import com.bankapp.common.dto.MyDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -52,20 +55,25 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response){
+    public ResponseEntity<RefreshResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response){
         return ResponseEntity.ok(service.login(request, response));
     }
 
     @PostMapping("/refresh")
-    public void refresh(){
-
+    public ResponseEntity<RefreshResponse> refresh(@CookieValue(value = "refreshToken", required = false) String refreshToken){
+        return ResponseEntity.ok(service.refresh(refreshToken));
     }
 
     @PatchMapping("/password/change")
-    public void changePassword(){
-
+    @PreAuthorize("isAuthenticated()")
+    public void changePassword(@AuthenticationPrincipal MyDetails myDetails, @Valid @RequestBody PasswordChangeRequest request){
+        service.changePassword(request, myDetails.id());
     }
 
+    @PatchMapping("/logout")
+    public void logout(){
+
+    }
     @GetMapping("/hello")
     public String hello(){
         return "hello";

@@ -13,6 +13,7 @@ public enum ErrorCode {
     UNAUTHORIZED_REQUEST,
     ID_NOT_FOUND,
     DATA_NOT_FOUND,
+    INVALID_REFRESH_TOKEN,
 
     //profile
     PROFILE_ALREADY_EXISTS,

@@ -3,10 +3,7 @@ package com.adnan.bankapp.authentication.service;
 import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.enums.Role;
-import com.adnan.bankapp.authentication.exception.DataNotFoundException;
-import com.adnan.bankapp.authentication.exception.EmailAlreadyExistsException;
-import com.adnan.bankapp.authentication.exception.IncorrectPasswordException;
-import com.adnan.bankapp.authentication.exception.UnauthorizedRequestException;
+import com.adnan.bankapp.authentication.exception.*;
 import com.adnan.bankapp.authentication.feign.BranchFeignClient;
 import com.adnan.bankapp.authentication.feign.OtpFeignClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
@@ -17,6 +14,7 @@ import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
 import com.bankapp.common.enums.UserStatus;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -126,10 +124,35 @@ public class AuthenticationService {
         log.info("Password setup completed successfully | email: {}", request.email());
     }
 
-    public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+    public RefreshResponse login(LoginRequest request, HttpServletResponse response) {
         MyUserDetails myUserDetails = securityService.validate(request);
         String token = jwtService.generate(myUserDetails);
         refreshTokenService.create(myUserDetails.getId(), response);
-        return new LoginResponse("Bearer", token);
+        return new RefreshResponse("Bearer", token);
+    }
+
+    public RefreshResponse refresh(String refreshToken) {
+        MyUserDetails userDetails = refreshTokenService.verify(refreshToken);
+        String jwt = jwtService.generate(userDetails);
+        return new RefreshResponse("Bearer", jwt);
+    }
+
+    @Transactional
+    public void changePassword(PasswordChangeRequest request, Long id) {
+        log.info("Password change request received | userId: {}", id);
+        if (!request.newPassword().equals(request.confirmPassword())){
+            log.warn("Password change failed | reason: passwords do not match | userId: {}", id);
+            throw new IncorrectPasswordException("Passwords do not match");
+        }
+        Credentials user = repository.findById(id).orElseThrow(() -> {
+            log.error("Password change failed | reason: user not found | userId: {}", id);
+            return new UserIdNotFoundException("User not found");
+        });
+        if(!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
+            log.warn("Password change failed | reason: incorrect old password | userId: {}", id);
+            throw new IncorrectPasswordException("Old password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        log.info("Password changed successfully | userId: {}", id);
     }
 }
