@@ -51,8 +51,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public void login(){
-
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+        return ResponseEntity.ok(service.login(request));
     }
 
     @PostMapping("/refresh")

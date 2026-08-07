@@ -5,9 +5,11 @@ import com.adnan.bankapp.authentication.enums.Role;
 import com.bankapp.common.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Credentials {
 
     @Id

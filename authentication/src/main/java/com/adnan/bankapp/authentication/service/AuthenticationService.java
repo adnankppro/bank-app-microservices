@@ -1,9 +1,6 @@
 package com.adnan.bankapp.authentication.service;
 
-import com.adnan.bankapp.authentication.dto.PasswordSetupRequest;
-import com.adnan.bankapp.authentication.dto.RegisterRequest;
-import com.adnan.bankapp.authentication.dto.VerifyPasswordSetupRequest;
-import com.adnan.bankapp.authentication.dto.VerifyRegisterRequest;
+import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.enums.Role;
 import com.adnan.bankapp.authentication.exception.DataNotFoundException;
@@ -13,6 +10,8 @@ import com.adnan.bankapp.authentication.exception.UnauthorizedRequestException;
 import com.adnan.bankapp.authentication.feign.BranchFeignClient;
 import com.adnan.bankapp.authentication.feign.OtpFeignClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
+import com.adnan.bankapp.authentication.security.MyUserDetails;
+import com.adnan.bankapp.authentication.security.SecurityService;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
@@ -36,6 +35,8 @@ public class AuthenticationService {
     private final OtpFeignClient otpFeignClient;
     private final BranchFeignClient branchFeignClient;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityService securityService;
+    private final JwtService jwtService;
 
     @Transactional(readOnly = true)
     public void register(RegisterRequest request) {
@@ -121,5 +122,11 @@ public class AuthenticationService {
         user.setStatus(UserStatus.ACTIVE);
 
         log.info("Password setup completed successfully | email: {}", request.email());
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        MyUserDetails myUserDetails = securityService.validate(request);
+        String token = jwtService.generate(myUserDetails);
+        return new LoginResponse("Bearer", token);
     }
 }
