@@ -9,6 +9,7 @@ import com.adnan.bankapp.authentication.feign.OtpFeignClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.adnan.bankapp.authentication.security.MyUserDetails;
 import com.adnan.bankapp.authentication.security.SecurityService;
+import com.bankapp.common.dto.MyDetails;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
@@ -18,6 +19,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,5 +157,25 @@ public class AuthenticationService {
         }
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         log.info("Password changed successfully | userId: {}", id);
+    }
+
+
+    public void logout(String cookieToken, HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken","")
+                .path("/auth")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        if (cookieToken != null ){
+            try {
+                Long userId = refreshTokenService.getUserIdFromToken(cookieToken);
+                refreshTokenService.revokeAllTokenByUserId(userId);
+            } catch (Exception ignored) {
+
+            }
+        }
+
     }
 }

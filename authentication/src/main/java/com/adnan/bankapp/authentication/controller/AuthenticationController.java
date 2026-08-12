@@ -70,9 +70,10 @@ public class AuthenticationController {
         service.changePassword(request, myDetails.id());
     }
 
-    @PatchMapping("/logout")
-    public void logout(){
-
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String cookieToken, HttpServletResponse response){
+        service.logout(cookieToken, response);
+        return ResponseEntity.noContent().build();
     }
     @GetMapping("/hello")
     public String hello(){

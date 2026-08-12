@@ -52,12 +52,7 @@ public class RefreshTokenService {
 
         refreshTokenRepository.save(refreshToken);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", rawToken+"."+tokenId)
-                .httpOnly(true)
-                .secure(true)
-                .path("/auth")
-                .maxAge(Duration.ofDays(14))
-                .build();
+        ResponseCookie cookie = setRefreshCookie(rawToken+"."+tokenId);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         log.info("Refresh token created successfully | userId: {}", id);
@@ -85,5 +80,33 @@ public class RefreshTokenService {
         }
 
         return new MyUserDetails(refreshToken.getUser());
+    }
+
+    @Transactional
+    public void revokeAllTokenByUserId(Long id) {
+        refreshTokenRepository.revokeActiveByUserId(id);
+    }
+
+    public ResponseCookie setRefreshCookie(String token){
+        return ResponseCookie.from("refreshToken",token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth")
+                .maxAge(Duration.ofDays(14))
+                .build();
+    }
+
+    public Long getUserIdFromToken(String cookieToken) {
+        if(cookieToken == null){
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        String[] tokenArray = cookieToken.split("\\.");
+        if (tokenArray.length != 2){
+            throw new InvalidRefreshTokenException("Invalid refresh token");
+        }
+
+        String tokenId = tokenArray[1];
+        return refreshTokenRepository.getUserIdByTokenId(tokenId).orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
     }
 }
