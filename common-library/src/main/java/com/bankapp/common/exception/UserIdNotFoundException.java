@@ -1,7 +1,6 @@
-package com.adnan.bankapp.authentication.exception;
+package com.bankapp.common.exception;
 
 import com.bankapp.common.enums.ErrorCode;
-import com.bankapp.common.exception.BankAppException;
 import org.springframework.http.HttpStatus;
 
 public class UserIdNotFoundException extends BankAppException {

@@ -40,18 +40,21 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/verify")
-    public void verifyRegister(@Valid @RequestBody VerifyRegisterRequest request){
+    public ResponseEntity<Void> verifyRegister(@Valid @RequestBody VerifyRegisterRequest request){
         service.verifyRegister(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/password/setup")
-    public void setupPassword(@RequestBody PasswordSetupRequest request){
+    public ResponseEntity<Void> setupPassword(@RequestBody PasswordSetupRequest request){
         service.generatePasswordOtp(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/password/setup/verify")
-    public void verifyPasswordSetup(@RequestBody VerifyPasswordSetupRequest request){
+    public ResponseEntity<Void> verifyPasswordSetup(@RequestBody VerifyPasswordSetupRequest request){
         service.setPassword(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login")
@@ -64,20 +67,17 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.refresh(refreshToken));
     }
 
-    @PatchMapping("/password/change")
+    @PostMapping("/password/change")
     @PreAuthorize("isAuthenticated()")
-    public void changePassword(@AuthenticationPrincipal MyDetails myDetails, @Valid @RequestBody PasswordChangeRequest request){
+    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal MyDetails myDetails, @Valid @RequestBody PasswordChangeRequest request){
         service.changePassword(request, myDetails.id());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String cookieToken, HttpServletResponse response){
         service.logout(cookieToken, response);
         return ResponseEntity.noContent().build();
-    }
-    @GetMapping("/hello")
-    public String hello(){
-        return "hello";
     }
 
 }

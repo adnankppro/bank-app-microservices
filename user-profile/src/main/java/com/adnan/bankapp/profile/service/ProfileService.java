@@ -9,7 +9,9 @@ import com.adnan.bankapp.profile.mapper.ProfileMapper;
 import com.adnan.bankapp.profile.repository.ProfileRepository;
 import com.adnan.bankapp.profile.specification.ProfileSpecification;
 import com.bankapp.common.dto.CreateProfileRequest;
+import com.bankapp.common.enums.UserStatus;
 import com.bankapp.common.exception.ProfileAlreadyExistsException;
+import com.bankapp.common.exception.UserIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -66,5 +68,16 @@ public class ProfileService {
         profileMapper.updateUser(profile, request);
         log.info("Update completed successfully | id: {}", id);
         return profileMapper.toResponse(profile);
+    }
+
+    @Transactional
+    public void changeStatus(Long id, UserStatus status){
+        log.info("Changing account status | userId: {} | status: {}", id, status);
+        Profile user = repository.findById(id).orElseThrow(() -> {
+            log.warn("Account status change failed | reason: user ID not found | userId: {} | status: {}", id, status);
+            return new UserIdNotFoundException("User ID not found");
+        });
+        user.setStatus(status);
+        log.info("Account status changed successfully | userId: {} | status: {}", id, status);
     }
 }

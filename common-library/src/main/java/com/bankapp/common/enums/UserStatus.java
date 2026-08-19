@@ -5,5 +5,6 @@ public enum UserStatus {
     PENDING_ADMIN_VERIFICATION,
     PENDING_PASSWORD_GENERATION,
     BLOCKED,
-    CLOSED
+    CLOSED,
+    REJECTED
 }

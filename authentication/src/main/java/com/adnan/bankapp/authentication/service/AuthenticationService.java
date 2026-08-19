@@ -6,16 +6,17 @@ import com.adnan.bankapp.authentication.enums.Role;
 import com.adnan.bankapp.authentication.exception.*;
 import com.adnan.bankapp.authentication.feign.BranchFeignClient;
 import com.adnan.bankapp.authentication.feign.OtpFeignClient;
+import com.adnan.bankapp.authentication.feign.ProfileFeignClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.adnan.bankapp.authentication.security.MyUserDetails;
 import com.adnan.bankapp.authentication.security.SecurityService;
-import com.bankapp.common.dto.MyDetails;
+import com.bankapp.common.dto.CreateProfileRequest;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
 import com.bankapp.common.enums.UserStatus;
+import com.bankapp.common.exception.UserIdNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -40,8 +41,9 @@ public class AuthenticationService {
     private final SecurityService securityService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final ProfileFeignClient profileFeignClient;
 
-    @Transactional(readOnly = true)
+
     public void register(RegisterRequest request) {
         log.info("Register request received | email: {}", request.email());
 
@@ -82,10 +84,9 @@ public class AuthenticationService {
         Credentials user = new Credentials(request.email());
         user.setStatus(UserStatus.PENDING_ADMIN_VERIFICATION);
         user.setRole(Role.USER);
-        repository.save(user);
+        user = repository.save(user);
 
-        // create a new service user-profile and call its register method to save user details as this only save authentication related data. Also in profile entity ID will not be auto generated, every data will be passed from here including ID, which is just generated (user.getId)
-
+        profileFeignClient.create(new CreateProfileRequest(user.getId(), registerRequest.name(), user.getEmail(), registerRequest.address(), registerRequest.dateOfBirth(), registerRequest.branchCode(), user.getStatus()));
         redisTemplate.delete(key);
 
         log.info("Register verification completed successfully | email: {}", request.email());
@@ -127,6 +128,7 @@ public class AuthenticationService {
         log.info("Password setup completed successfully | email: {}", request.email());
     }
 
+    @Transactional
     public RefreshResponse login(LoginRequest request, HttpServletResponse response) {
         MyUserDetails myUserDetails = securityService.validate(request);
         String token = jwtService.generate(myUserDetails);
@@ -135,8 +137,10 @@ public class AuthenticationService {
     }
 
     public RefreshResponse refresh(String refreshToken) {
+        log.info("Token refresh request received.");
         MyUserDetails userDetails = refreshTokenService.verify(refreshToken);
         String jwt = jwtService.generate(userDetails);
+        log.info("Token refreshed successfully | userId: {}", userDetails.getId());
         return new RefreshResponse("Bearer", jwt);
     }
 

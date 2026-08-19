@@ -14,6 +14,7 @@ public enum ErrorCode {
     ID_NOT_FOUND,
     DATA_NOT_FOUND,
     INVALID_REFRESH_TOKEN,
+    INVALID_ACCOUNT_STATUS,
 
     //profile
     PROFILE_ALREADY_EXISTS,

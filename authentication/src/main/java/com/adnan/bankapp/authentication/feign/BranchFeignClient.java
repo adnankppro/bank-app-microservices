@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient("BRANCH")
 public interface BranchFeignClient {
-
+    
     @GetMapping("/branches/exists/{branchCode}")
     public void exists(@PathVariable String branchCode);
 
