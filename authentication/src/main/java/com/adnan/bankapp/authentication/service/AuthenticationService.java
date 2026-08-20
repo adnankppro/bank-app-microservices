@@ -1,12 +1,12 @@
 package com.adnan.bankapp.authentication.service;
 
+import com.adnan.bankapp.authentication.client.BranchServiceClient;
+import com.adnan.bankapp.authentication.client.OtpServiceClient;
+import com.adnan.bankapp.authentication.client.ProfileServiceClient;
 import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.enums.Role;
 import com.adnan.bankapp.authentication.exception.*;
-import com.adnan.bankapp.authentication.feign.BranchFeignClient;
-import com.adnan.bankapp.authentication.feign.OtpFeignClient;
-import com.adnan.bankapp.authentication.feign.ProfileFeignClient;
 import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.adnan.bankapp.authentication.security.MyUserDetails;
 import com.adnan.bankapp.authentication.security.SecurityService;
@@ -35,13 +35,13 @@ public class AuthenticationService {
 
     private final RedisTemplate<String, RegisterRequest> redisTemplate;
     private final UserRepository repository;
-    private final OtpFeignClient otpFeignClient;
-    private final BranchFeignClient branchFeignClient;
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final ProfileFeignClient profileFeignClient;
+    private final ProfileServiceClient profileServiceClient;
+    private final BranchServiceClient branchServiceClient;
+    private final OtpServiceClient otpServiceClient;
 
 
     public void register(RegisterRequest request) {
@@ -52,13 +52,12 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("Email is already registered.");
         }
 
-        branchFeignClient.exists(request.branchCode());
+        branchServiceClient.exists(request.branchCode());
 
         String key = "register:"+request.email();
         redisTemplate.opsForValue().set(key, request, 5, TimeUnit.MINUTES);
 
-        // create and send otp
-        otpFeignClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
+        otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
 
         log.info("Registration initiated successfully | email: {}", request.email());
     }
@@ -79,14 +78,14 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("Email already registered.");
         }
 
-        otpFeignClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.REGISTER, request.otp()));
+        otpServiceClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.REGISTER, request.otp()));
 
         Credentials user = new Credentials(request.email());
         user.setStatus(UserStatus.PENDING_ADMIN_VERIFICATION);
         user.setRole(Role.USER);
         user = repository.save(user);
 
-        profileFeignClient.create(new CreateProfileRequest(user.getId(), registerRequest.name(), user.getEmail(), registerRequest.address(), registerRequest.dateOfBirth(), registerRequest.branchCode(), user.getStatus()));
+        profileServiceClient.create(new CreateProfileRequest(user.getId(), registerRequest.name(), user.getEmail(), registerRequest.address(), registerRequest.dateOfBirth(), registerRequest.branchCode(), user.getStatus()));
         redisTemplate.delete(key);
 
         log.info("Register verification completed successfully | email: {}", request.email());
@@ -101,7 +100,7 @@ public class AuthenticationService {
             throw new UnauthorizedRequestException("Invalid request");
         }
 
-        otpFeignClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD));
+        otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD));
 
         log.info("Password generation OTP created successfully | email: {}", request.email());
     }
@@ -120,7 +119,7 @@ public class AuthenticationService {
             return new UnauthorizedRequestException("Invalid request");
         });
 
-        otpFeignClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD, request.otp()));
+        otpServiceClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD, request.otp()));
 
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setStatus(UserStatus.ACTIVE);
