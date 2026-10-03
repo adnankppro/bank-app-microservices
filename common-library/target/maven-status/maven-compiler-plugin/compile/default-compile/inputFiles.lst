@@ -20,3 +20,4 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ServiceException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\UserIdNotFoundException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\feign\CustomErrorDecoder.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\filter\GatewayFilter.java

@@ -15,6 +15,7 @@ import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.enums.OtpPurpose;
 import com.bankapp.common.enums.UserStatus;
+import com.bankapp.common.exception.EmailAlreadyExistsException;
 import com.bankapp.common.exception.UserIdNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

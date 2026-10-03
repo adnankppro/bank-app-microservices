@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserApplicationRejectedEventProducer {
+public class UserRejectedEventProducer {
 
     private final KafkaTemplate<String, UserApplicationRejectedEvent> kafkaTemplate;
 

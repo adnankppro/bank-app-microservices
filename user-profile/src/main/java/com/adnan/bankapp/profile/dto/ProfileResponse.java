@@ -1,4 +1,4 @@
 package com.adnan.bankapp.profile.dto;
 
-public record ProfileResponse() {
+public record ProfileResponse(String name) {
 }

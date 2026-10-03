@@ -2,7 +2,7 @@ package com.adnan.bankapp.authentication.service;
 
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.exception.InvalidAccountStatusException;
-import com.adnan.bankapp.authentication.producer.UserApplicationRejectedEventProducer;
+import com.adnan.bankapp.authentication.producer.UserRejectedEventProducer;
 import com.adnan.bankapp.authentication.producer.UserApprovedEventProducer;
 import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.bankapp.common.enums.UserStatus;
@@ -19,7 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserApprovedEventProducer userApprovedEventProducer;
-    private final UserApplicationRejectedEventProducer userApplicationRejectedEventProducer;
+    private final UserRejectedEventProducer userRejectedEventProducer;
 
     @Transactional
     public void approve(Long id) {
@@ -42,9 +42,10 @@ public class UserService {
         }
 
         user.setStatus(UserStatus.PENDING_PASSWORD_GENERATION);
+        userApprovedEventProducer.publish(user.getEmail(), id);
+
         log.info("User approval request completed successfully | userId: {}", id);
 
-        userApprovedEventProducer.publish(user.getEmail(), id);
     }
 
     @Transactional
@@ -64,6 +65,6 @@ public class UserService {
         user.setStatus(UserStatus.REJECTED);
         log.info("User rejected successfully | userId: {}", id);
 
-        userApplicationRejectedEventProducer.publish(user.getEmail(), id);
+        userRejectedEventProducer.publish(user.getEmail(), id);
     }
 }

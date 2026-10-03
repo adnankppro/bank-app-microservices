@@ -4,12 +4,28 @@ spring:
 
   cloud:
     gateway:
-      webflux:
-        routes:
-          -
+      server:
+        webflux:
+          routes:
+            - id: authentication
+              uri: lb://authentication
+              predicates:
+                - Path=/auth/**, /users/**, /admins/**
+
+            - id: branch
+              uri: lb://branch-service
+              predicates:
+                - Path=/branches/**
+
+            - id: profile
+              uri: lb://profile-service
+              predicates:
+                - Path=/profiles/**
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+jwt:
+  secret: wesdrt67384e74tg3e89op32ewhra9823esdcfjuhe38eyrf78o934ergtfweggfgggggegg8gg@_83492a)&#E*Re

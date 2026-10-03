@@ -27,6 +27,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
         """)
     void revokeActiveByUserId(Long id);
 
-    @Query(" select u.user.id from RefreshToken r where r.tokenId = :tokenId")
+    @Query(" select r.user.id from RefreshToken r where r.tokenId = :tokenId")
     Optional<Long> getUserIdByTokenId(@Param("tokenId") String tokenId);
 }

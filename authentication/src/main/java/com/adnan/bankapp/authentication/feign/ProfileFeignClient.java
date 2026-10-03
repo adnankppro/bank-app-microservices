@@ -4,7 +4,7 @@ import com.bankapp.common.dto.CreateProfileRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient("PROFILE-SERVICE")
+@FeignClient("profile-service")
 public interface ProfileFeignClient {
 
     @PostMapping("/profiles")
