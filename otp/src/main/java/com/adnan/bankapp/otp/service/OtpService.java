@@ -86,9 +86,8 @@ public class OtpService {
         }
 
         final String recentCountKey = "otp:count:recent"+request.email()+":"+request.otpPurpose();
-        redisTemplate.delete(otpKey);
-        redisTemplate.delete(recentCountKey);
         redisTemplate.delete(failedAttemptKey);
+        redisTemplate.delete(recentCountKey);
 
         log.info("OTP validated successfully | email: {} | purpose: {}", request.email(), request.otpPurpose());
     }

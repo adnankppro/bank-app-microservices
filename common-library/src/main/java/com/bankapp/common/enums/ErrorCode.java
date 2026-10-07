@@ -24,5 +24,8 @@ public enum ErrorCode {
     SERVICE_ERROR,
 
     //branch
-    BRANCH_NOT_FOUND
+    BRANCH_NOT_FOUND,
+
+    //common
+    INVALID_REQUEST
 }

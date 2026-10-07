@@ -1,8 +1,10 @@
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\CreateBankAccountRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\CreateProfileRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\ErrorResponse.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\MyDetails.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpGenerateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpValidateRequest.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\BankAccountType.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\OtpPurpose.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\UserStatus.java
@@ -14,6 +16,7 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\BranchNotFoundException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\EmailAlreadyExistsException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidOtpException.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidRequestException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpGenerateLimitExceededException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpValidateLimitExceededException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ProfileAlreadyExistsException.java
