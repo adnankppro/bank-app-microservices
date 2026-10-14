@@ -1,6 +1,6 @@
 package com.adnan.bankapp.banking.account.util;
 
-import com.adnan.bankapp.banking.account.exception.DuplicateAccountNumberException;
+import com.adnan.bankapp.banking.exception.DuplicateAccountNumberException;
 import com.adnan.bankapp.banking.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

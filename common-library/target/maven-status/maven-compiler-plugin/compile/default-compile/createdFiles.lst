@@ -18,7 +18,6 @@ com\bankapp\common\feign\CustomErrorDecoder$1.class
 com\bankapp\common\filter\GatewayFilter.class
 com\bankapp\common\event\OtpGeneratedEvent.class
 com\bankapp\common\event\UserApplicationRejectedEvent.class
-com\bankapp\common\enums\BankAccountType.class
 com\bankapp\common\exception\EmailAlreadyExistsException.class
 com\bankapp\common\event\RegisterSuccessfulEvent.class
 com\bankapp\common\feign\CustomErrorDecoder.class

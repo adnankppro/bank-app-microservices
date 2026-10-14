@@ -1,4 +1,4 @@
-package com.adnan.bankapp.banking.account.exception;
+package com.adnan.bankapp.banking.exception;
 
 import com.bankapp.common.enums.ErrorCode;
 import com.bankapp.common.exception.BankAppException;

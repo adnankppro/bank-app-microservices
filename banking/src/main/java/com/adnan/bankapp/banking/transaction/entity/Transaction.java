@@ -5,6 +5,7 @@ import com.adnan.bankapp.banking.transaction.enums.TransactionPurpose;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,6 +16,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long initiatedByUserId;
+
     @ManyToOne
     @JoinColumn(referencedColumnName = "accountNumber")
     private BankAccount sender;
@@ -23,10 +27,13 @@ public class Transaction {
     @JoinColumn(referencedColumnName = "accountNumber")
     private BankAccount receiver;
 
-    private Double amount;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
+    @Column(nullable = false)
     private LocalDateTime time;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionPurpose transactionPurpose;
 }

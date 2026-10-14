@@ -1,7 +1,6 @@
 package com.adnan.bankapp.banking.account.entity;
 
 import com.adnan.bankapp.banking.account.AccountStatus;
-import com.bankapp.common.enums.BankAccountType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,14 +17,20 @@ public class BankAccount {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
+    private String accountHolderName;
+
     @Column(nullable = false, unique = true)
     private String accountNumber;
 
-    @Enumerated(EnumType.STRING)
-    private BankAccountType accountType;
+    @ManyToOne()
+    @JoinColumn(name = "account_type_id", nullable = false)
+    private AccountType accountType;
 
+    @Column(nullable = false)
     private BigDecimal balance;
 
+    @Column(nullable = false)
     private String branchCode;
 
     @Column(length = 4)

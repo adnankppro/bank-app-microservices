@@ -3,9 +3,11 @@ package com.adnan.bankapp.banking.account.service;
 
 import com.adnan.bankapp.banking.account.AccountStatus;
 import com.adnan.bankapp.banking.account.dto.*;
+import com.adnan.bankapp.banking.account.entity.AccountType;
 import com.adnan.bankapp.banking.account.entity.BankAccount;
-import com.adnan.bankapp.banking.account.exception.IncorrectPinException;
-import com.adnan.bankapp.banking.account.exception.InvalidAccountNumberException;
+import com.adnan.bankapp.banking.account.repository.AccountTypeRepository;
+import com.adnan.bankapp.banking.exception.IncorrectPinException;
+import com.adnan.bankapp.banking.exception.InvalidAccountNumberException;
 import com.adnan.bankapp.banking.account.mapper.AccountMapper;
 import com.adnan.bankapp.banking.account.repository.AccountRepository;
 import com.adnan.bankapp.banking.account.util.AccountNumberGenerator;
@@ -33,6 +35,7 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final CommonAccountUtil commonAccountUtil;
     private final PasswordEncoder passwordEncoder;
+    private final AccountTypeRepository accountTypeRepository;
 
     @Transactional
     public void create(CreateBankAccountRequest request) {
@@ -43,11 +46,13 @@ public class AccountService {
             throw new InvalidRequestException("You already have a bank account with requested account type.");
         }
 
+        //AccountType accountType = accountTypeRepository.findById(request.)
+
         String accountNumber = accountNumberGenerator.generate();
 
         BankAccount bankAccount = new BankAccount();
         bankAccount.setAccountNumber(accountNumber);
-        bankAccount.setAccountType(request.bankAccountType());
+        //bankAccount.setAccountType(request.bankAccountType());
         bankAccount.setUserId(request.userId());
         bankAccount.setBalance(BigDecimal.ZERO);
         bankAccount.setBranchCode(request.branchCode());
@@ -139,5 +144,56 @@ public class AccountService {
         bankAccount.setPin(passwordEncoder.encode(request.newPin()));
 
         log.info("PIN changed successfully | userId: {} | accountNumber: {}", userId, request.accountNumber());
+    }
+
+    @Transactional
+    public BankAccount getBankAccountByAccountNumberAndUserId( String accountNumber, Long id) {
+        return accountRepository.findByAccountNumberAndUserId(accountNumber, id).orElseThrow(() -> new InvalidAccountNumberException("Invalid account number"));
+    }
+
+    @Transactional
+    public BankAccount getBankAccountByAccountNumberAndUserIdForUpdate(String accountNumber, Long userId) {
+        log.info("Request received to fetch bank account for update | accountNumber: {} | userId: {}", accountNumber, userId);
+        BankAccount bankAccount = accountRepository.findByAccountNumberAndUserIdForUpdate(accountNumber, userId).orElseThrow(() ->{
+            log.warn("Bank account fetch failed | reason: invalid account number | accountNumber: {} | userId: {}", accountNumber, userId);
+            return new InvalidAccountNumberException("Invalid account number");
+        });
+        log.info("Bank account fetch successfully | accountNumber: {} | userId: {}", accountNumber, userId);
+        return bankAccount;
+    }
+
+    @Transactional
+    public BankAccount getBankAccountByAccountNumberForUpdate( String accountNumber) {
+        log.info("Request received to fetch bank account for update | accountNumber: {}", accountNumber);
+        BankAccount bankAccount = accountRepository.findByAccountNumberForUpdate(accountNumber).orElseThrow(() ->{
+            log.warn("Bank account fetch failed | reason: invalid account number | accountNumber: {}", accountNumber);
+            return new InvalidAccountNumberException("Invalid account number");
+        });
+        log.info("Bank account fetch successfully | accountNumber: {}", accountNumber);
+        return bankAccount;}
+
+    @Transactional
+    public AccountTypeDetails createNewAccountType(CreateAccountTypeRequest request) {
+        log.info("Request received to create to new account type | accountTypeName: {}", request.accountTypeName());
+
+        if (accountTypeRepository.existsByAccountTypeName(request.accountTypeName())){
+            log.warn("New account type creation failed | reason: duplicate accountTypeName | accountTypeName: {}", request.accountTypeName());
+            throw new InvalidRequestException("Duplicate accountTypeName");
+        }
+
+        AccountType accountType = accountMapper.toAccountType(request);
+        accountType = accountTypeRepository.save(accountType);
+
+        return accountMapper.toAccountTypeDetails(accountType);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByAccountNumberAndUserId(String accountNumber, Long userId) {
+        return accountRepository.existsByAccountNumberAndUserId(accountNumber, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByAccountNumber(String accountNumber) {
+        return accountRepository.existsByAccountNumber(accountNumber);
     }
 }

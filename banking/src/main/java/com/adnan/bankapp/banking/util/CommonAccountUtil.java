@@ -2,9 +2,8 @@ package com.adnan.bankapp.banking.util;
 
 import com.adnan.bankapp.banking.account.AccountStatus;
 import com.adnan.bankapp.banking.account.entity.BankAccount;
-import com.adnan.bankapp.banking.account.exception.IncorrectPinException;
-import com.adnan.bankapp.banking.account.exception.InvalidAccountNumberException;
-import com.adnan.bankapp.banking.account.exception.PinValidationLimitExceededException;
+import com.adnan.bankapp.banking.exception.IncorrectPinException;
+import com.adnan.bankapp.banking.exception.PinValidationLimitExceededException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

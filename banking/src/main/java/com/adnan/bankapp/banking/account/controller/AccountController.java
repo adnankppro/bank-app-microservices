@@ -75,4 +75,9 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/types")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<AccountTypeDetails> createNewAccountType(@Valid @RequestBody CreateAccountTypeRequest request){
+        return ResponseEntity.ok(accountService.createNewAccountType(request));
+    }
 }

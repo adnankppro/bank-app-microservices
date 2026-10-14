@@ -4,7 +4,6 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\MyDetails.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpGenerateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpValidateRequest.java
-D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\BankAccountType.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\OtpPurpose.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\UserStatus.java
