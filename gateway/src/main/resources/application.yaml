@@ -22,6 +22,12 @@ spring:
               predicates:
                 - Path=/profiles/**
 
+            - id: banking
+              uri: lb://banking
+              predicates:
+                - Path=/accounts/**, /transactions/**
+
+
 eureka:
   client:
     service-url:

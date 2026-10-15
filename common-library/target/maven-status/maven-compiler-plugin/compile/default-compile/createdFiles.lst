@@ -2,6 +2,7 @@ com\bankapp\common\exception\BankAppException.class
 com\bankapp\common\exception\InvalidOtpException.class
 com\bankapp\common\dto\CreateBankAccountRequest.class
 com\bankapp\common\dto\OtpGenerateRequest.class
+com\bankapp\common\event\CreateBankAccountEvent.class
 com\bankapp\common\exception\ProfileAlreadyExistsException.class
 com\bankapp\common\enums\UserStatus.class
 com\bankapp\common\dto\ErrorResponse.class

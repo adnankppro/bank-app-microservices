@@ -24,7 +24,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    //create -- currently used internally in only auth service after admin verification of user details
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<Void> create(@Valid @RequestBody CreateBankAccountRequest request){

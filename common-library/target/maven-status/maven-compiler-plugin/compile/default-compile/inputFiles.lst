@@ -7,6 +7,7 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\OtpPurpose.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\UserStatus.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\event\CreateBankAccountEvent.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\event\OtpGeneratedEvent.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\event\RegisterSuccessfulEvent.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\event\UserApplicationRejectedEvent.java

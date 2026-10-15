@@ -2,8 +2,8 @@ package com.adnan.bankapp.authentication.service;
 
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.exception.InvalidAccountStatusException;
-import com.adnan.bankapp.authentication.producer.UserRejectedEventProducer;
-import com.adnan.bankapp.authentication.producer.UserApprovedEventProducer;
+import com.adnan.bankapp.authentication.kafka.producer.UserRejectedEventProducer;
+import com.adnan.bankapp.authentication.kafka.producer.UserApprovedEventProducer;
 import com.adnan.bankapp.authentication.repository.UserRepository;
 import com.bankapp.common.enums.UserStatus;
 import com.bankapp.common.exception.UserIdNotFoundException;

@@ -1,4 +1,4 @@
-package com.adnan.bankapp.authentication.producer;
+package com.adnan.bankapp.authentication.kafka.producer;
 
 import com.bankapp.common.event.UserApprovedEvent;
 import lombok.RequiredArgsConstructor;
