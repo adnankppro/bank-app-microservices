@@ -1,7 +1,7 @@
 package com.adnan.bankapp.banking.account.service;
 
 
-import com.adnan.bankapp.banking.account.AccountStatus;
+import com.adnan.bankapp.banking.account.enums.AccountStatus;
 import com.adnan.bankapp.banking.account.dto.*;
 import com.adnan.bankapp.banking.account.entity.AccountType;
 import com.adnan.bankapp.banking.account.entity.BankAccount;
@@ -11,6 +11,7 @@ import com.adnan.bankapp.banking.exception.InvalidAccountNumberException;
 import com.adnan.bankapp.banking.account.mapper.AccountMapper;
 import com.adnan.bankapp.banking.account.repository.AccountRepository;
 import com.adnan.bankapp.banking.account.util.AccountNumberGenerator;
+import com.adnan.bankapp.banking.feign.service.BranchClientService;
 import com.adnan.bankapp.banking.util.CommonAccountUtil;
 import com.bankapp.common.dto.CreateBankAccountRequest;
 import com.bankapp.common.exception.InvalidRequestException;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -36,31 +38,34 @@ public class AccountService {
     private final CommonAccountUtil commonAccountUtil;
     private final PasswordEncoder passwordEncoder;
     private final AccountTypeRepository accountTypeRepository;
+    private final BranchClientService branchClientService;
 
     @Transactional
     public void create(CreateBankAccountRequest request) {
-        log.info("Request for new bank account creation received | userId: {} | accountType: {} | branchCode: {}", request.userId(), request.bankAccountType(), request.branchCode());
+        log.info("Request for new bank account creation received | userId: {} | accountTypeId: {} | branchCode: {}", request.userId(), request.accountTypeId(), request.branchCode());
 
-        if(accountRepository.existsByUserIdAndAccountType(request.userId(), request.bankAccountType())){
-            log.warn("Bank account creation failed | reason: User already have a bank account with requested account type | userId: {} | accountType: {} | branchCode: {}", request.userId(), request.bankAccountType(), request.branchCode());
+        if(accountRepository.existsByUserIdAndAccountTypeId(request.userId(),  request.accountTypeId())){
+            log.warn("Bank account creation failed | reason: User already have a bank account with requested account type | userId: {} | accountTypeId: {} | branchCode: {}", request.userId(), request.accountTypeId(), request.branchCode());
             throw new InvalidRequestException("You already have a bank account with requested account type.");
         }
 
-        //AccountType accountType = accountTypeRepository.findById(request.)
+        AccountType accountType = accountTypeRepository.findById(request.accountTypeId()).orElseThrow(() -> new InvalidRequestException("Invalid account type"));
+        branchClientService.exists(request.branchCode()); // exception will be thrown if branchCode is invalid.
 
         String accountNumber = accountNumberGenerator.generate();
 
         BankAccount bankAccount = new BankAccount();
         bankAccount.setAccountNumber(accountNumber);
-        //bankAccount.setAccountType(request.bankAccountType());
+        bankAccount.setAccountType(accountType);
         bankAccount.setUserId(request.userId());
         bankAccount.setBalance(BigDecimal.ZERO);
+        bankAccount.setAccountHolderName(request.accountHolderName());
         bankAccount.setBranchCode(request.branchCode());
         bankAccount.setStatus(AccountStatus.PENDING_PIN_GENERATION);
 
         BankAccount newAccount = accountRepository.save(bankAccount);
 
-        log.info("Bank account created successfully | userId: {} | accountType: {} | branchCode: {} | accountId: {}", newAccount.getUserId(), newAccount.getAccountType(), newAccount.getBranchCode(), newAccount.getId());
+        log.info("Bank account created successfully | userId: {} | accountTypeId: {} | branchCode: {} | accountNumber: {}", newAccount.getUserId(), newAccount.getAccountType().getId(), newAccount.getBranchCode(), newAccount.getAccountNumber());
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +126,7 @@ public class AccountService {
     }
 
     @Transactional
-    public void changePin(@Valid ChangePinRequest request, Long userId) {
+    public void changePin(ChangePinRequest request, Long userId) {
         log.info("Request received to change PIN | userid: {} | accountNumber: {}", userId, request.accountNumber());
 
         if (!request.newPin().equals(request.confirmPin())){
@@ -144,11 +149,6 @@ public class AccountService {
         bankAccount.setPin(passwordEncoder.encode(request.newPin()));
 
         log.info("PIN changed successfully | userId: {} | accountNumber: {}", userId, request.accountNumber());
-    }
-
-    @Transactional
-    public BankAccount getBankAccountByAccountNumberAndUserId( String accountNumber, Long id) {
-        return accountRepository.findByAccountNumberAndUserId(accountNumber, id).orElseThrow(() -> new InvalidAccountNumberException("Invalid account number"));
     }
 
     @Transactional
@@ -187,13 +187,24 @@ public class AccountService {
         return accountMapper.toAccountTypeDetails(accountType);
     }
 
-    @Transactional(readOnly = true)
+
     public boolean existsByAccountNumberAndUserId(String accountNumber, Long userId) {
         return accountRepository.existsByAccountNumberAndUserId(accountNumber, userId);
     }
 
-    @Transactional(readOnly = true)
+
     public boolean existsByAccountNumber(String accountNumber) {
         return accountRepository.existsByAccountNumber(accountNumber);
+    }
+
+    public VerifyAccountHolderResponse verifyAccountHolder(String accountNumber) {
+        String name = accountRepository.getAccountHolderNameByAccountNumber(accountNumber).orElseThrow(() -> new InvalidAccountNumberException("Invalid account number"));
+        return new VerifyAccountHolderResponse(name);
+    }
+
+    public void blockAccount(BankAccount bankAccount) {
+        log.info("Request received to block account | accountNumber: {}", bankAccount.getAccountNumber());
+        bankAccount.setStatus(AccountStatus.BLOCKED);
+        log.info("Account blocked successfully | accountNumber: {}", bankAccount.getAccountNumber());
     }
 }

@@ -1,6 +1,5 @@
-package com.adnan.bankapp.authentication.feign;
+package com.adnan.bankapp.authentication.feign.client;
 
-import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface BranchFeignClient {
 
     @GetMapping("/branches/exists/{branchCode}")
-    public void exists(@PathVariable String branchCode);
+    void exists(@PathVariable String branchCode);
 
 }

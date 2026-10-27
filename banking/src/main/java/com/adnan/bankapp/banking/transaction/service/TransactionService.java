@@ -1,6 +1,6 @@
 package com.adnan.bankapp.banking.transaction.service;
 
-import com.adnan.bankapp.banking.account.AccountStatus;
+import com.adnan.bankapp.banking.account.enums.AccountStatus;
 import com.adnan.bankapp.banking.account.entity.AccountType;
 import com.adnan.bankapp.banking.account.entity.BankAccount;
 import com.adnan.bankapp.banking.account.service.AccountService;
@@ -12,6 +12,7 @@ import com.adnan.bankapp.banking.transaction.enums.TransactionType;
 import com.adnan.bankapp.banking.transaction.mapper.TransactionMapper;
 import com.adnan.bankapp.banking.transaction.repository.TransactionRepository;
 import com.adnan.bankapp.banking.transaction.specification.TransactionSpecification;
+import com.adnan.bankapp.banking.util.CommonAccountUtil;
 import com.bankapp.common.dto.MyDetails;
 import com.bankapp.common.exception.InvalidRequestException;
 import jakarta.validation.Valid;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -33,9 +33,9 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
-    private final PasswordEncoder passwordEncoder;
+    private final CommonAccountUtil commonAccountUtil;
 
-    @Transactional
+    @Transactional(noRollbackFor = PinValidationLimitExceededException.class)
     public TransactionResponse send(TransactionRequest request, MyDetails myDetails) {
         log.info("Request received for transaction | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
 
@@ -46,16 +46,20 @@ public class TransactionService {
             throw new InvalidRequestException("Sender and receiver account can't be same.");
         }
 
-        BankAccount sender = accountService.getBankAccountByAccountNumberAndUserIdForUpdate(request.sender(), myDetails.id());
+        BankAccount sender, receiver;
+
+        int diff = request.sender().compareTo(request.receiver());// to prevent deadlock
+        if (diff<0){
+            sender = accountService.getBankAccountByAccountNumberAndUserIdForUpdate(request.sender(), myDetails.id());
+            receiver = accountService.getBankAccountByAccountNumberForUpdate(request.receiver());
+        }else {
+            receiver = accountService.getBankAccountByAccountNumberForUpdate(request.receiver());
+            sender = accountService.getBankAccountByAccountNumberAndUserIdForUpdate(request.sender(), myDetails.id());
+        }
 
         if (sender.getAccountType().getMaxSendTransactionAmount().compareTo(request.amount()) < 0){
             log.warn("Transaction failed | reason: requested amount is greater than limit | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
-            throw new InvalidRequestException("Maximum transaction amount permitted for your account is "+sender.getAccountType().getMaxSendTransactionAmount()+" rupees.");
-        }
-
-        if (!passwordEncoder.matches(request.pin(), sender.getPin())){
-            log.warn("Transaction failed | reason: incorrect PIN | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
-            throw new IncorrectPinException("Incorrect PIN");
+            throw new InvalidRequestException("Maximum amount per transaction permitted for your account is "+sender.getAccountType().getMaxSendTransactionAmount()+" rupees.");
         }
 
         if (!sender.getStatus().equals(AccountStatus.ACTIVE)){
@@ -63,19 +67,21 @@ public class TransactionService {
             throw new InvalidAccountStatusException("Your account is not active. Please contact branch.");
         }
 
+        commonAccountUtil.validatePin(sender, request.pin());// this will throw incorrect pin exception, if the limit exceeded, it will also block the account, that's why noRollbackFor PinValidationLimitExceededException
+
         if (sender.getBalance().compareTo(request.amount())<0){
             log.warn("Transaction failed | reason: insufficient balance | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
             throw new InsufficientBalanceException("Insufficient balance.");
         }
 
-        BankAccount receiver = accountService.getBankAccountByAccountNumberForUpdate(request.receiver());
+
 
         if (!receiver.getStatus().equals(AccountStatus.ACTIVE)){
             log.warn("Transaction failed | reason: receiver account is not active | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
             throw new InvalidAccountStatusException("Receiver account is not active.");
         }
 
-        validateTransaction(sender, receiver, request.amount(), time);
+        validateTransaction(sender, receiver, request.amount(), time);// check transaction limit
 
         // update balance
         sender.setBalance(sender.getBalance().subtract(request.amount()));
@@ -95,7 +101,7 @@ public class TransactionService {
         return new TransactionResponse( TransactionType.SEND,receiver.getAccountHolderName(), receiver.getAccountNumber(), transaction.getAmount(), transaction.getTime(), transaction.getTransactionPurpose());
     }
 
-    @Transactional
+
     private void validateTransaction(BankAccount sender, BankAccount receiver, BigDecimal amount, LocalDateTime time) {
 
         log.info("Validating transaction | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
@@ -118,9 +124,9 @@ public class TransactionService {
         }
 
         // 24 hour transaction count
-        Integer senderActualTransactionCount = senderAccountType.getDailySendTransactionCountLimit();
-        Integer senderUsedTransactionCount = transactionRepository.countSentTransactionsSince(sender.getAccountNumber(), cutOffTime);
-        int senderAvailableTransactionCount = senderActualTransactionCount - senderUsedTransactionCount;
+        Long senderActualTransactionCount = senderAccountType.getDailySendTransactionCountLimit();
+        Long senderUsedTransactionCount = transactionRepository.countSentTransactionsSince(sender.getAccountNumber(), cutOffTime);
+        long senderAvailableTransactionCount = senderActualTransactionCount - senderUsedTransactionCount;
 
         // count - currentCount < 1 = fail
         if (senderAvailableTransactionCount < 1){
@@ -142,9 +148,9 @@ public class TransactionService {
         }
 
         // 24 hour transaction count
-        Integer receiverActualTransactionCount = receiverAccountType.getDailyReceiveTransactionCountLimit();
-        Integer receiverUsedTransactionCount = transactionRepository.countReceiveTransactionsSince(receiver.getAccountNumber(), cutOffTime);
-        int receiverAvailableTransactionCount = receiverActualTransactionCount - receiverUsedTransactionCount;
+        Long receiverActualTransactionCount = receiverAccountType.getDailyReceiveTransactionCountLimit();
+        Long receiverUsedTransactionCount = transactionRepository.countReceiveTransactionsSince(receiver.getAccountNumber(), cutOffTime);
+        long receiverAvailableTransactionCount = receiverActualTransactionCount - receiverUsedTransactionCount;
 
         // count - currentCount < 1 = fail
         if (receiverAvailableTransactionCount < 1){
@@ -167,7 +173,7 @@ public class TransactionService {
         }
         Transaction transaction = new Transaction();
         transaction.setReceiver(account);
-        transaction.setSender(account);// change it to something related to branch
+        transaction.setSender(null);
         transaction.setAmount(request.amount());
         transaction.setTransactionPurpose(TransactionPurpose.DEPOSIT);
         transaction.setInitiatedByUserId(admin.id());

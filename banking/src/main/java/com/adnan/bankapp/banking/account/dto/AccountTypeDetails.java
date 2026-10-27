@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 public record AccountTypeDetails(
     String accountTypeName,
     BigDecimal dailySendTransactionAmountLimit,
-    Integer dailySendTransactionCountLimit,
+    Long dailySendTransactionCountLimit,
     BigDecimal dailyReceiveTransactionAmountLimit,
-    Integer dailyReceiveTransactionCountLimit,
+    Long dailyReceiveTransactionCountLimit,
     BigDecimal maxSendTransactionAmount
 ) {
 }

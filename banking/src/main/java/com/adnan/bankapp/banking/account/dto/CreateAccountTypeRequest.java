@@ -11,11 +11,11 @@ public record CreateAccountTypeRequest(
         @NotNull(message = "dailySendTransactionAmountLimit must not be null.")
         BigDecimal dailySendTransactionAmountLimit,
         @NotNull(message = "dailySendTransactionCountLimit must not be null.")
-        Integer dailySendTransactionCountLimit,
+        Long dailySendTransactionCountLimit,
         @NotNull(message = "dailyReceiveTransactionAmountLimit must not be null.")
         BigDecimal dailyReceiveTransactionAmountLimit,
         @NotNull(message = "dailyReceiveTransactionCountLimit must not be null.")
-        Integer dailyReceiveTransactionCountLimit,
+        Long dailyReceiveTransactionCountLimit,
         @NotNull(message = "maxSendTransactionAmount must not be null.")
         BigDecimal maxSendTransactionAmount
 ) {

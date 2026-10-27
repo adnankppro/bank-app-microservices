@@ -4,6 +4,7 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\MyDetails.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpGenerateRequest.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\OtpValidateRequest.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\dto\ProfileResponse.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\ErrorCode.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\OtpPurpose.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\enums\UserStatus.java
@@ -15,6 +16,7 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\BankAppException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\BranchNotFoundException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\EmailAlreadyExistsException.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\handler\BankAppGlobalExceptionHandler.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidOtpException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\InvalidRequestException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\OtpGenerateLimitExceededException.java
@@ -22,5 +24,6 @@ D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ProfileAlreadyExistsException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\ServiceException.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\exception\UserIdNotFoundException.java
+D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\feign\BankAppFeignClientConfig.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\feign\CustomErrorDecoder.java
 D:\my-projects\bank-app-(microservices)\common-library\src\main\java\com\bankapp\common\filter\GatewayFilter.java

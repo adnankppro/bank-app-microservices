@@ -2,10 +2,14 @@ package com.adnan.bankapp.authentication.service;
 
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.exception.InvalidAccountStatusException;
+import com.adnan.bankapp.authentication.feign.service.ProfileClientService;
+import com.adnan.bankapp.authentication.kafka.producer.CreateBankAccountEventProducer;
 import com.adnan.bankapp.authentication.kafka.producer.UserRejectedEventProducer;
 import com.adnan.bankapp.authentication.kafka.producer.UserApprovedEventProducer;
 import com.adnan.bankapp.authentication.repository.UserRepository;
+import com.bankapp.common.dto.ProfileResponse;
 import com.bankapp.common.enums.UserStatus;
+import com.bankapp.common.event.CreateBankAccountEvent;
 import com.bankapp.common.exception.UserIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ProfileClientService profileClientService;
     private final UserApprovedEventProducer userApprovedEventProducer;
     private final UserRejectedEventProducer userRejectedEventProducer;
+    private final CreateBankAccountEventProducer createBankAccountEventProducer;
 
     @Transactional
     public void approve(Long id) {
@@ -33,7 +39,7 @@ public class UserService {
         UserStatus status = user.getStatus();
         if(status == UserStatus.ACTIVE || status == UserStatus.PENDING_PASSWORD_GENERATION){
             log.warn("User approval failed | reason: account is already approved | userId: {}", id);
-            throw new InvalidAccountStatusException("Your account is already approved");
+            throw new InvalidAccountStatusException("Account is already approved");
         }
 
         if (status != UserStatus.PENDING_ADMIN_VERIFICATION){
@@ -42,8 +48,9 @@ public class UserService {
         }
 
         user.setStatus(UserStatus.PENDING_PASSWORD_GENERATION);
+        ProfileResponse userProfile = profileClientService.getById(id);
         userApprovedEventProducer.publish(user.getEmail(), id);
-
+        createBankAccountEventProducer.publish(new CreateBankAccountEvent(user.getId(), userProfile.name(), 1L /*1 is for savings account*/, userProfile.branchCode()));
         log.info("User approval request completed successfully | userId: {}", id);
 
     }

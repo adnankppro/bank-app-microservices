@@ -1,6 +1,6 @@
-package com.adnan.bankapp.authentication.client;
+package com.adnan.bankapp.authentication.feign.service;
 
-import com.adnan.bankapp.authentication.feign.OtpFeignClient;
+import com.adnan.bankapp.authentication.feign.client.OtpFeignClient;
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;
 import com.bankapp.common.exception.ServiceException;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class OtpServiceClient {
+public class OtpClientService {
 
     private final OtpFeignClient otpFeignClient;
 

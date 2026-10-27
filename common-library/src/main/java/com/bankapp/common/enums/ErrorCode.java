@@ -22,9 +22,18 @@ public enum ErrorCode {
 
     //Service
     SERVICE_ERROR,
+    INTERNAL_SERVER_ERROR,
+
+    //spring boot / java
+    VALIDATION_ERROR,
+    AUTHENTICATION_ERROR,
+    ACCESS_DENIED,
+    MALFORMED_JSON,
+    METHOD_NOT_ALLOWED,
 
     //branch
     BRANCH_NOT_FOUND,
+    DUPLICATE_BRANCH_CODE,
 
     //common
     INVALID_REQUEST

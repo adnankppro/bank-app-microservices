@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 
 public class ProfileNotFoundException extends BankAppException {
     public ProfileNotFoundException(String message) {
-        super(message, HttpStatus.NO_CONTENT.value(), ErrorCode.PROFILE_NOT_FOUND);
+        super(message, HttpStatus.NOT_FOUND.value(), ErrorCode.PROFILE_NOT_FOUND);
     }
 }

@@ -22,7 +22,7 @@ public record TransactionRequest(@NotBlank(message = "Receiver account number mu
                                  @Max(value = 100000, message = "Maximum amount per transaction is 100000 rupees")
                                  BigDecimal amount,
 
-                                 @NotBlank
+                                 @NotNull(message = "Please select transaction purpose")
                                  TransactionPurpose purpose
                                  ) {
 }

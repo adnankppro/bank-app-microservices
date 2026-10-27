@@ -1,10 +1,7 @@
 package com.adnan.bankapp.profile.entity;
 
 import com.bankapp.common.enums.UserStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,16 +12,16 @@ public class Profile {
 
     @Id
     private Long id;
-
+    @Column(nullable = false)
     private String name;
-
+    @Column(nullable = false)
     private String email;
 
     private String address;
 
     private LocalDate dateOfBirth;
-
-    private String branch;
+    @Column(nullable = false)
+    private String branchCode;
 
     private UserStatus status;
 

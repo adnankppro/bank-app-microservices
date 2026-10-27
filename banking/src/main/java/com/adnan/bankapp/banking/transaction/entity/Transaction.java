@@ -24,7 +24,7 @@ public class Transaction {
     private BankAccount sender;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "accountNumber")
+    @JoinColumn(referencedColumnName = "accountNumber", nullable = false)
     private BankAccount receiver;
 
     @Column(nullable = false)

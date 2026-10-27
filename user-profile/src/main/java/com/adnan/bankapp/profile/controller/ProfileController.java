@@ -2,11 +2,11 @@ package com.adnan.bankapp.profile.controller;
 
 
 import com.adnan.bankapp.profile.dto.ProfileFilter;
-import com.adnan.bankapp.profile.dto.ProfileResponse;
 import com.adnan.bankapp.profile.dto.UpdateProfileRequest;
 import com.adnan.bankapp.profile.service.ProfileService;
 import com.bankapp.common.dto.CreateProfileRequest;
 import com.bankapp.common.dto.MyDetails;
+import com.bankapp.common.dto.ProfileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,13 +26,22 @@ public class ProfileController {
     private final ProfileService service;
 
     @PostMapping
-    public ResponseEntity<ProfileResponse> create(@Valid @RequestBody CreateProfileRequest request){
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<
+            ProfileResponse> create(@Valid @RequestBody CreateProfileRequest request){
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(service.create(request));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ProfileResponse> getById(@PathVariable Long id){
         return ResponseEntity.ok(service.getById(id));
+    }
+
+    @GetMapping("/{id}/name")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<String> getNameById(@PathVariable Long id){
+        return ResponseEntity.ok(service.getNameById(id));
     }
 
     // get details (self)
@@ -42,17 +51,19 @@ public class ProfileController {
         return ResponseEntity.ok(service.getById(myDetails.id()));
     }
 
-    // get all (specification) create ProfileResponseFilter
-    @GetMapping
-    public ResponseEntity<Page<ProfileResponse>> getAll(@PageableDefault Pageable pageable, @ModelAttribute ProfileFilter filter){
-        return ResponseEntity.ok(service.getAll(pageable, filter));
-    }
-
-    // update (self)
+    //update self
     @PatchMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProfileResponse> update(@AuthenticationPrincipal MyDetails myDetails, @RequestBody UpdateProfileRequest request){
         return ResponseEntity.ok(service.update(myDetails.id(), request));
     }
+
+    // get all (specification) create ProfileResponseFilter
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<Page<ProfileResponse>> getAll(@PageableDefault Pageable pageable, @ModelAttribute ProfileFilter filter){
+        return ResponseEntity.ok(service.getAll(pageable, filter));
+    }
+
 
 }

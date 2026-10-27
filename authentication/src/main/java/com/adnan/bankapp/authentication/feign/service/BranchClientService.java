@@ -1,6 +1,6 @@
-package com.adnan.bankapp.authentication.client;
+package com.adnan.bankapp.authentication.feign.service;
 
-import com.adnan.bankapp.authentication.feign.BranchFeignClient;
+import com.adnan.bankapp.authentication.feign.client.BranchFeignClient;
 import com.bankapp.common.exception.ServiceException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BranchServiceClient {
+public class BranchClientService {
 
     private final BranchFeignClient branchFeignClient;
 

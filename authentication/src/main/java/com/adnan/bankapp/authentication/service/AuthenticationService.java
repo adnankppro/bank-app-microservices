@@ -1,8 +1,8 @@
 package com.adnan.bankapp.authentication.service;
 
-import com.adnan.bankapp.authentication.client.BranchServiceClient;
-import com.adnan.bankapp.authentication.client.OtpServiceClient;
-import com.adnan.bankapp.authentication.client.ProfileServiceClient;
+import com.adnan.bankapp.authentication.feign.service.BranchClientService;
+import com.adnan.bankapp.authentication.feign.service.OtpClientService;
+import com.adnan.bankapp.authentication.feign.service.ProfileClientService;
 import com.adnan.bankapp.authentication.dto.*;
 import com.adnan.bankapp.authentication.entity.Credentials;
 import com.adnan.bankapp.authentication.enums.Role;
@@ -40,9 +40,9 @@ public class AuthenticationService {
     private final SecurityService securityService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private final ProfileServiceClient profileServiceClient;
-    private final BranchServiceClient branchServiceClient;
-    private final OtpServiceClient otpServiceClient;
+    private final ProfileClientService profileClientService;
+    private final BranchClientService branchClientService;
+    private final OtpClientService otpClientService;
 
 
     public void register(RegisterRequest request) {
@@ -53,12 +53,12 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("Email is already registered.");
         }
 
-        branchServiceClient.exists(request.branchCode());
+        branchClientService.exists(request.branchCode());
 
         String key = "register:"+request.email();
         redisTemplate.opsForValue().set(key, request, 5, TimeUnit.MINUTES);
 
-        otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
+        otpClientService.generate(new OtpGenerateRequest(request.email(), OtpPurpose.REGISTER));
 
         log.info("Registration initiated successfully | email: {}", request.email());
     }
@@ -79,14 +79,14 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("Email already registered.");
         }
 
-        otpServiceClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.REGISTER, request.otp()));
+        otpClientService.validate(new OtpValidateRequest(request.email(), OtpPurpose.REGISTER, request.otp()));
 
         Credentials user = new Credentials(request.email());
         user.setStatus(UserStatus.PENDING_ADMIN_VERIFICATION);
         user.setRole(Role.USER);
         user = repository.save(user);
 
-        profileServiceClient.create(new CreateProfileRequest(user.getId(), registerRequest.name(), user.getEmail(), registerRequest.address(), registerRequest.dateOfBirth(), registerRequest.branchCode(), user.getStatus()));
+        profileClientService.create(new CreateProfileRequest(user.getId(), registerRequest.name(), user.getEmail(), registerRequest.address(), registerRequest.dateOfBirth(), registerRequest.branchCode(), user.getStatus()));
         redisTemplate.delete(key);
 
         log.info("Register verification completed successfully | email: {}", request.email());
@@ -101,7 +101,7 @@ public class AuthenticationService {
             throw new UnauthorizedRequestException("Invalid request");
         }
 
-        otpServiceClient.generate(new OtpGenerateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD));
+        otpClientService.generate(new OtpGenerateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD));
 
         log.info("Password generation OTP created successfully | email: {}", request.email());
     }
@@ -120,7 +120,7 @@ public class AuthenticationService {
             return new UnauthorizedRequestException("Invalid request");
         });
 
-        otpServiceClient.validate(new OtpValidateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD, request.otp()));
+        otpClientService.validate(new OtpValidateRequest(request.email(), OtpPurpose.GENERATE_PASSWORD, request.otp()));
 
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setStatus(UserStatus.ACTIVE);

@@ -1,6 +1,6 @@
 package com.adnan.bankapp.authentication.service;
 
-import com.adnan.bankapp.authentication.client.ProfileServiceClient;
+import com.adnan.bankapp.authentication.feign.service.ProfileClientService;
 import com.adnan.bankapp.authentication.dto.RegisterRequest;
 import com.adnan.bankapp.authentication.dto.RegisterResponse;
 import com.adnan.bankapp.authentication.entity.Credentials;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
 
     private final UserRepository userRepository;
-    private final ProfileServiceClient profileServiceClient;
+    private final ProfileClientService profileClientService;
 
     @Transactional
     public RegisterResponse create(RegisterRequest request) {
@@ -36,7 +36,7 @@ public class AdminService {
         admin.setStatus(UserStatus.PENDING_PASSWORD_GENERATION);
 
         admin = userRepository.save(admin);
-        profileServiceClient.create(new CreateProfileRequest(admin.getId(), request.name(), admin.getEmail(), request.address(), request.dateOfBirth(), request.branchCode(), admin.getStatus()));
+        profileClientService.create(new CreateProfileRequest(admin.getId(), request.name(), admin.getEmail(), request.address(), request.dateOfBirth(), request.branchCode(), admin.getStatus()));
 
         log.info("Admin creation completed successfully | email: {}", admin.getEmail());
 

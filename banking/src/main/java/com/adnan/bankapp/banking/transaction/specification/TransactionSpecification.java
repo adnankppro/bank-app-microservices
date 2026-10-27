@@ -30,13 +30,27 @@ public class TransactionSpecification {
                                 cb.equal(sender.get("accountNumber"), accountNumber)
                         );
                     }
-                    case RECEIVE, DEPOSIT -> {
+                    case RECEIVE -> {
                         predicates.add(
                                 cb.equal(receiver.get("accountNumber"), accountNumber)
                         );
                     }
+                    case DEPOSIT -> {
+                        predicates.add(
+                                cb.and(
+                                        cb.equal(receiver.get("accountNumber"), accountNumber),
+                                        cb.isNull(sender)
+                                )
+                        );
+                    }
+                    default -> {// this ensures that only transaction of given account number is fetched
+                        predicates.add(cb.or(
+                                cb.equal(sender.get("accountNumber"), accountNumber),
+                                cb.equal(receiver.get("accountNumber"), accountNumber)
+                        ));
+                    }
                 }
-            }else {
+            }else { // this ensures that only transaction of given account number is fetched
                 predicates.add(cb.or(
                         cb.equal(sender.get("accountNumber"), accountNumber),
                         cb.equal(receiver.get("accountNumber"), accountNumber)

@@ -75,9 +75,14 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/types")
+    @PostMapping("/type")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<AccountTypeDetails> createNewAccountType(@Valid @RequestBody CreateAccountTypeRequest request){
         return ResponseEntity.ok(accountService.createNewAccountType(request));
+    }
+
+    @GetMapping("/{accountNumber}/verify")
+    public ResponseEntity<VerifyAccountHolderResponse> verifyAccountHolder(@PathVariable String accountNumber){
+        return ResponseEntity.ok(accountService.verifyAccountHolder(accountNumber));
     }
 }

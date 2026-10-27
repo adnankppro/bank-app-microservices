@@ -11,7 +11,7 @@ public class TransactionMapper {
         String counterPartyName;
         String counterPartyAccountNumber;
 
-        if (transaction.getSender().getAccountNumber().equals(accountNumber) && transaction.getReceiver().getAccountNumber().equals(accountNumber)){
+        if (transaction.getSender() == null){
             transactionType = TransactionType.DEPOSIT;
             counterPartyName = "CASH_DEPOSIT";
             counterPartyAccountNumber = "CASH_DEPOSIT";

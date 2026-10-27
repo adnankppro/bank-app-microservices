@@ -4,10 +4,12 @@ com\bankapp\common\dto\CreateBankAccountRequest.class
 com\bankapp\common\dto\OtpGenerateRequest.class
 com\bankapp\common\event\CreateBankAccountEvent.class
 com\bankapp\common\exception\ProfileAlreadyExistsException.class
+com\bankapp\common\dto\ProfileResponse.class
 com\bankapp\common\enums\UserStatus.class
 com\bankapp\common\dto\ErrorResponse.class
 com\bankapp\common\event\UserApprovedEvent.class
 com\bankapp\common\exception\OtpValidateLimitExceededException.class
+com\bankapp\common\exception\handler\BankAppGlobalExceptionHandler.class
 com\bankapp\common\exception\InvalidRequestException.class
 com\bankapp\common\exception\ServiceException.class
 com\bankapp\common\dto\MyDetails.class
@@ -16,6 +18,7 @@ com\bankapp\common\dto\CreateProfileRequest.class
 com\bankapp\common\exception\UserIdNotFoundException.class
 com\bankapp\common\enums\ErrorCode.class
 com\bankapp\common\feign\CustomErrorDecoder$1.class
+com\bankapp\common\feign\BankAppFeignClientConfig.class
 com\bankapp\common\filter\GatewayFilter.class
 com\bankapp\common\event\OtpGeneratedEvent.class
 com\bankapp\common\event\UserApplicationRejectedEvent.class

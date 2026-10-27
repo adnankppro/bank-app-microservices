@@ -1,4 +1,4 @@
-package com.adnan.bankapp.authentication.feign;
+package com.adnan.bankapp.authentication.feign.client;
 
 import com.bankapp.common.dto.OtpGenerateRequest;
 import com.bankapp.common.dto.OtpValidateRequest;

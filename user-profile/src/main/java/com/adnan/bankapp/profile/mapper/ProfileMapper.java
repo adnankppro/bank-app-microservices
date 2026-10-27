@@ -1,9 +1,10 @@
 package com.adnan.bankapp.profile.mapper;
 
-import com.adnan.bankapp.profile.dto.ProfileResponse;
+
 import com.adnan.bankapp.profile.dto.UpdateProfileRequest;
 import com.adnan.bankapp.profile.entity.Profile;
 import com.bankapp.common.dto.CreateProfileRequest;
+import com.bankapp.common.dto.ProfileResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

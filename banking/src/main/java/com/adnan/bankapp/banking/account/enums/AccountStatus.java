@@ -1,4 +1,4 @@
-package com.adnan.bankapp.banking.account;
+package com.adnan.bankapp.banking.account.enums;
 
 public enum AccountStatus {
     ACTIVE,

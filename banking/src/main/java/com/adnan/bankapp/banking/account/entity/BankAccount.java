@@ -1,6 +1,6 @@
 package com.adnan.bankapp.banking.account.entity;
 
-import com.adnan.bankapp.banking.account.AccountStatus;
+import com.adnan.bankapp.banking.account.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -33,7 +33,7 @@ public class BankAccount {
     @Column(nullable = false)
     private String branchCode;
 
-    @Column(length = 4)
+    @Column
     private String pin;
 
     @Enumerated(EnumType.STRING)

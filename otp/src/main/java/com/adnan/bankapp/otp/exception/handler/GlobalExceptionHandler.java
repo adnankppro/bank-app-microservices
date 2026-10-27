@@ -1,4 +1,4 @@
-package com.adnan.bankapp.otp.exception;
+package com.adnan.bankapp.otp.exception.handler;
 
 import com.bankapp.common.dto.ErrorResponse;
 import com.bankapp.common.exception.BankAppException;

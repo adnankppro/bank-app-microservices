@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import java.util.List;
@@ -20,18 +22,31 @@ import java.util.List;
 public class JwtAuthenticationFilter implements GlobalFilter {
 
     private final JwtService jwtService;
-    private final List<String> publicPaths = List.of("/auth/login", "/auth/register", "/auth/register/verify","/auth/password/setup","/auth/password/setup/verify", "/auth/refresh");
-
+    private final List<Endpoint> publicEndpoints = List.of(
+            //authentication
+            new Endpoint("/auth/login", HttpMethod.POST),
+            new Endpoint("/auth/register", HttpMethod.POST),
+            new Endpoint("/auth/register/verify", HttpMethod.POST),
+            new Endpoint("/auth/password/setup", HttpMethod.POST),
+            new Endpoint("/auth/password/setup/verify", HttpMethod.POST),
+            new Endpoint("/auth/refresh", HttpMethod.POST),
+            //branch
+            new Endpoint("/branches", HttpMethod.GET),
+            new Endpoint("/branches/*", HttpMethod.GET),
+            new Endpoint("/branches/exists/*", HttpMethod.GET),
+            //banking
+            new Endpoint("/accounts/*/verify", HttpMethod.GET)
+    );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().value();
+        HttpMethod method = exchange.getRequest().getMethod();
 
-        System.out.println(path);
-        boolean isPublicPath = publicPaths.stream()
-                .anyMatch(path::startsWith);
+        boolean isPublicEndpoint = publicEndpoints.stream()
+                .anyMatch(e -> e.matches(path, method));
 
-        if (isPublicPath){
+        if (isPublicEndpoint){
             return chain.filter(exchange);
         }
 
@@ -61,7 +76,16 @@ public class JwtAuthenticationFilter implements GlobalFilter {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-
+        log.info();
         return chain.filter(exchange);
+    }
+}
+
+record Endpoint(String path, HttpMethod method){
+
+    private static final AntPathMatcher antPatchMatcher = new AntPathMatcher();
+
+    public boolean matches(String path, HttpMethod method){
+        return this.method.equals(method) && antPatchMatcher.match(this.path, path);
     }
 }

@@ -1,7 +1,6 @@
 package com.adnan.bankapp.banking.account.repository;
 
 import com.adnan.bankapp.banking.account.entity.BankAccount;
-import com.bankapp.common.enums.BankAccountType;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -9,14 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.lang.ScopedValue;
 import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<BankAccount, Long> {
     boolean existsByAccountNumber(String accountNumber);
 
-    boolean existsByUserIdAndAccountType(Long userId, BankAccountType bankAccountType);
+    boolean existsByUserIdAndAccountTypeId(Long userId, Long accountTypeId);
 
     Optional<BankAccount> findByAccountNumber(String accountNumber);
 
@@ -35,7 +33,10 @@ public interface AccountRepository extends JpaRepository<BankAccount, Long> {
     where b.accountNumber = :accountNumber
     """)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<BankAccount> findByAccountNumberForUpdate(@Param("userId") String accountNumber);
+    Optional<BankAccount> findByAccountNumberForUpdate(@Param("accountNumber") String accountNumber);
 
     boolean existsByAccountNumberAndUserId(String accountNumber, Long userId);
+
+    @Query("SELECT b.accountHolderName FROM BankAccount b WHERE b.accountNumber = :accountNumber")
+    Optional<String> getAccountHolderNameByAccountNumber(@Param("accountNumber") String accountNumber);
 }

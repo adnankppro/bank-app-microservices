@@ -11,6 +11,6 @@ public record CreateProfileRequest(@NotNull @Min(1) Long id,
                                    @NotBlank String email,
                                    @NotBlank String address,
                                    @NotNull LocalDate dateOfBirth,
-                                   @NotNull String branch,
+                                   @NotNull String branchCode,
                                    @NotNull UserStatus status) {
 }

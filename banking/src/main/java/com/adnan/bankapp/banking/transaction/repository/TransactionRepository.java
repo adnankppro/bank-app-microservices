@@ -25,23 +25,27 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
            SELECT coalesce(SUM(t.amount), 0)
            FROM Transaction t
            WHERE t.receiver.accountNumber = :accountNumber AND
-           t.time > :cutOffTime
+           t.time > :cutOffTime AND
+           t.transactionPurpose != DEPOSIT
            """)
     BigDecimal getTotalReceiveAmountSince(@Param("accountNumber") String accountNumber, @Param("cutOffTime") LocalDateTime cutOffTime);
 
 
     @Query("""
-        SELECT COUNT(t) FROM Transaction t
+        SELECT COUNT(t)
+        FROM Transaction t
         WHERE t.sender.accountNumber = :accountNumber AND
         t.time > :cutOffTime
 """)
-    Integer countSentTransactionsSince(@Param("accountNumber") String accountNumber, @Param("cutOffTime") LocalDateTime cutOffTime);
+    Long countSentTransactionsSince(@Param("accountNumber") String accountNumber, @Param("cutOffTime") LocalDateTime cutOffTime);
 
     @Query("""
-        SELECT COUNT(t) FROM Transaction t
+        SELECT COUNT(t)
+        FROM Transaction t
         WHERE t.receiver.accountNumber = :accountNumber AND
-        t.time > :cutOffTime
-""")
-    Integer countReceiveTransactionsSince(@Param("accountNumber") String accountNumber, @Param("cutOffTime") LocalDateTime cutOffTime);
+        t.time > :cutOffTime AND
+        t.transactionPurpose != DEPOSIT
+""")// package structure for DEPOSIT enum````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+    Long countReceiveTransactionsSince(@Param("accountNumber") String accountNumber, @Param("cutOffTime") LocalDateTime cutOffTime);
 
 }

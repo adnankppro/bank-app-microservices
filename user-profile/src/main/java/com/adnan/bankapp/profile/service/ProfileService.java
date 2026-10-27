@@ -1,7 +1,6 @@
 package com.adnan.bankapp.profile.service;
 
 import com.adnan.bankapp.profile.dto.ProfileFilter;
-import com.adnan.bankapp.profile.dto.ProfileResponse;
 import com.adnan.bankapp.profile.dto.UpdateProfileRequest;
 import com.adnan.bankapp.profile.entity.Profile;
 import com.adnan.bankapp.profile.exception.ProfileNotFoundException;
@@ -9,6 +8,7 @@ import com.adnan.bankapp.profile.mapper.ProfileMapper;
 import com.adnan.bankapp.profile.repository.ProfileRepository;
 import com.adnan.bankapp.profile.specification.ProfileSpecification;
 import com.bankapp.common.dto.CreateProfileRequest;
+import com.bankapp.common.dto.ProfileResponse;
 import com.bankapp.common.enums.UserStatus;
 import com.bankapp.common.exception.ProfileAlreadyExistsException;
 import com.bankapp.common.exception.UserIdNotFoundException;
@@ -79,5 +79,14 @@ public class ProfileService {
         });
         user.setStatus(status);
         log.info("Account status changed successfully | userId: {} | status: {}", id, status);
+    }
+
+    @Transactional(readOnly = true)
+    public String getNameById(Long id) {
+        log.info("Request received to fetch user's name | userId: {}", id);
+        return repository.getNameById(id).orElseThrow(() -> {
+            log.warn("Account status change failed | reason: user ID not found | userId: {}", id);
+            return new UserIdNotFoundException("User ID not found");
+        });
     }
 }
