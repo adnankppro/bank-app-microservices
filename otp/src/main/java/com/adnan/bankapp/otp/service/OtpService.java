@@ -39,7 +39,7 @@ public class OtpService {
         if(recentCount != null && recentCount>1){
             log.warn("Recent OTP limit exceeded for email: {} | purpose: {}", request.email(), request.otpPurpose());
             Long expire = redisTemplate.getExpire(recentCountKey, TimeUnit.SECONDS);
-            throw new OtpGenerateLimitExceededException("OTP Limit exceeded. Please try again after " + (expire>=0 ? expire : "few") + " seconds.");
+            throw new OtpGenerateLimitExceededException("OTP Limit exceeded. Please try again after " + (expire>0 ? expire : "few") + " seconds.");
         }
         if (recentCount != null && recentCount == 1) {
             redisTemplate.expire(recentCountKey, Duration.ofSeconds(120));

@@ -8,7 +8,7 @@ public record DepositRequest(@NotBlank(message = "Receiver account number must n
                              @Pattern(regexp = "^\\d{10}$", message = "Receiver account number must be 10 digit")
                              String accountNumber,
                              @NotNull(message = "Amount must not be null")
-                             @Min(value = 1, message = "Minimum transaction amount is 100 rupees")
-                             @Max(value = 100000, message = "Maximum amount per transaction is 500000 rupees")
+                             @Min(value = 100, message = "Minimum transaction amount is 100 rupees")
+                             @Max(value = 500000, message = "Maximum amount per deposit is 500000 rupees")
                              BigDecimal amount) {
 }

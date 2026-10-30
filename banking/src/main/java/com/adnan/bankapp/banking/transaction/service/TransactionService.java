@@ -1,7 +1,6 @@
 package com.adnan.bankapp.banking.transaction.service;
 
 import com.adnan.bankapp.banking.account.enums.AccountStatus;
-import com.adnan.bankapp.banking.account.entity.AccountType;
 import com.adnan.bankapp.banking.account.entity.BankAccount;
 import com.adnan.bankapp.banking.account.service.AccountService;
 import com.adnan.bankapp.banking.exception.*;
@@ -12,6 +11,7 @@ import com.adnan.bankapp.banking.transaction.enums.TransactionType;
 import com.adnan.bankapp.banking.transaction.mapper.TransactionMapper;
 import com.adnan.bankapp.banking.transaction.repository.TransactionRepository;
 import com.adnan.bankapp.banking.transaction.specification.TransactionSpecification;
+import com.adnan.bankapp.banking.transaction.util.TransactionValidator;
 import com.adnan.bankapp.banking.util.CommonAccountUtil;
 import com.bankapp.common.dto.MyDetails;
 import com.bankapp.common.exception.InvalidRequestException;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,6 +33,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final CommonAccountUtil commonAccountUtil;
+    private final TransactionValidator transactionValidator;
 
     @Transactional(noRollbackFor = PinValidationLimitExceededException.class)
     public TransactionResponse send(TransactionRequest request, MyDetails myDetails) {
@@ -67,13 +67,12 @@ public class TransactionService {
             throw new InvalidAccountStatusException("Your account is not active. Please contact branch.");
         }
 
-        commonAccountUtil.validatePin(sender, request.pin());// this will throw incorrect pin exception, if the limit exceeded, it will also block the account, that's why noRollbackFor PinValidationLimitExceededException
-
         if (sender.getBalance().compareTo(request.amount())<0){
             log.warn("Transaction failed | reason: insufficient balance | sender: {} | receiver: {} | amount: {} | purpose: {}", request.sender(), request.receiver(), request.amount(), request.purpose());
             throw new InsufficientBalanceException("Insufficient balance.");
         }
 
+        commonAccountUtil.validatePin(sender, request.pin());// this will throw incorrect pin exception, if the limit exceeded, it will also block the account, that's why noRollbackFor PinValidationLimitExceededException
 
 
         if (!receiver.getStatus().equals(AccountStatus.ACTIVE)){
@@ -81,7 +80,7 @@ public class TransactionService {
             throw new InvalidAccountStatusException("Receiver account is not active.");
         }
 
-        validateTransaction(sender, receiver, request.amount(), time);// check transaction limit
+        transactionValidator.validate(sender, receiver, request.amount(), time);// check transaction limit, will throw exception if anything is wrong
 
         // update balance
         sender.setBalance(sender.getBalance().subtract(request.amount()));
@@ -102,65 +101,6 @@ public class TransactionService {
     }
 
 
-    private void validateTransaction(BankAccount sender, BankAccount receiver, BigDecimal amount, LocalDateTime time) {
-
-        log.info("Validating transaction | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-        AccountType senderAccountType = sender.getAccountType();
-        AccountType receiverAccountType = receiver.getAccountType();
-
-        LocalDateTime cutOffTime = time.minusHours(24);
-
-
-        //validate sender
-        BigDecimal senderActualLimit = senderAccountType.getDailySendTransactionAmountLimit();
-        BigDecimal senderUsedLimit = transactionRepository.getTotalSentAmountSince(sender.getAccountNumber(), cutOffTime);
-        // 24 hour transaction volume
-        BigDecimal senderAvailableLimit = senderActualLimit.subtract(senderUsedLimit);
-
-        // if limit-volume<amount = fail
-        if (senderAvailableLimit.compareTo(amount) < 0){
-            log.warn("Transaction failed | reason: sender transaction limit is exceeded | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-            throw new TransactionLimitExceededException("Your 24 hours transaction limit is exceeded. Please try again later.");
-        }
-
-        // 24 hour transaction count
-        Long senderActualTransactionCount = senderAccountType.getDailySendTransactionCountLimit();
-        Long senderUsedTransactionCount = transactionRepository.countSentTransactionsSince(sender.getAccountNumber(), cutOffTime);
-        long senderAvailableTransactionCount = senderActualTransactionCount - senderUsedTransactionCount;
-
-        // count - currentCount < 1 = fail
-        if (senderAvailableTransactionCount < 1){
-            log.warn("Transaction failed | reason: sender transaction count is exceeded | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-            throw new TransactionLimitExceededException("Your 24 hours transaction count is exceeded. Please try again later.");
-        }
-
-
-        // validate receiver
-        BigDecimal receiverActualLimit = receiverAccountType.getDailyReceiveTransactionAmountLimit();
-        BigDecimal receiverUsedLimit = transactionRepository.getTotalReceiveAmountSince(receiver.getAccountNumber(), cutOffTime);
-        // 24 hour transaction volume
-        BigDecimal receiverAvailableLimit = receiverActualLimit.subtract(receiverUsedLimit);
-
-        // if limit-volume<amount = fail
-        if (receiverAvailableLimit.compareTo(amount) < 0){
-            log.warn("Transaction failed | reason: receiver transaction limit is exceeded | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-            throw new TransactionLimitExceededException("Receiver 24 hours transaction limit is exceeded. Please try again later.");
-        }
-
-        // 24 hour transaction count
-        Long receiverActualTransactionCount = receiverAccountType.getDailyReceiveTransactionCountLimit();
-        Long receiverUsedTransactionCount = transactionRepository.countReceiveTransactionsSince(receiver.getAccountNumber(), cutOffTime);
-        long receiverAvailableTransactionCount = receiverActualTransactionCount - receiverUsedTransactionCount;
-
-        // count - currentCount < 1 = fail
-        if (receiverAvailableTransactionCount < 1){
-            log.warn("Transaction failed | reason: receiver transaction count is exceeded | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-            throw new TransactionLimitExceededException("Receiver 24 hours transaction count is exceeded. Please try again later.");
-        }
-
-        log.info("Transaction validation completed successfully | sender: {} | receiver: {} | amount: {}", sender.getAccountNumber(), receiver.getAccountNumber(), amount);
-
-    }
 
     @Transactional
     public DepositResponse deposit(@Valid DepositRequest request, MyDetails admin) {
