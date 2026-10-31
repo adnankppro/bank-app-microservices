@@ -65,7 +65,7 @@ public class CommonAccountUtil {
             }
             throw new IncorrectPinException("Wrong PIN. "+ (MAX_ALLOWED_FAILED_ATTEMPT - failedAttempt) +" attempt(s) left before blocking your account");
         }
-        stringRedisTemplate.expira
+
         stringRedisTemplate.delete(failedAttemptKey); // deleting key after successful pin validation
 
         log.info("PIN validated successfully | accountNumber: {}", bankAccount.getAccountNumber());
