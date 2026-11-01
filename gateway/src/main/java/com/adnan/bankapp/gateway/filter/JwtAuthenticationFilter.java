@@ -24,11 +24,11 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     private final JwtService jwtService;
     private final List<Endpoint> publicEndpoints = List.of(
             //authentication
-            new Endpoint("/auth/login", HttpMethod.POST),
             new Endpoint("/auth/register", HttpMethod.POST),
             new Endpoint("/auth/register/verify", HttpMethod.POST),
             new Endpoint("/auth/password/setup", HttpMethod.POST),
             new Endpoint("/auth/password/setup/verify", HttpMethod.POST),
+            new Endpoint("/auth/login", HttpMethod.POST),
             new Endpoint("/auth/refresh", HttpMethod.POST),
             //branch
             new Endpoint("/branches", HttpMethod.GET),
