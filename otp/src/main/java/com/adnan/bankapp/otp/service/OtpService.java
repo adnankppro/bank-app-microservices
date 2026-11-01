@@ -33,8 +33,8 @@ public class OtpService {
     public void generate(OtpGenerateRequest request) {
         
         String otpKey = "otp:"+request.email()+":"+request.otpPurpose();
-        String lastHourCountKey = "otp:count:lastHour"+request.email()+":"+request.otpPurpose();
-        String recentGenerationKey = "otp:count:recent"+request.email()+":"+request.otpPurpose();
+        String lastHourCountKey = "otp:count:lastHour:"+request.email()+":"+request.otpPurpose();
+        String recentGenerationKey = "otp:count:recent:"+request.email()+":"+request.otpPurpose();
 
         Boolean generatedRecently = redisTemplate.opsForValue().setIfAbsent(recentGenerationKey, String.valueOf(1), Duration.ofSeconds(120));
         if (generatedRecently == null){
@@ -78,15 +78,19 @@ public class OtpService {
 
         String otpKey = "otp:"+request.email()+":"+request.otpPurpose();
         String failedAttemptKey = "otp:failedAttempt"+request.email()+":"+request.otpPurpose();
-        String failedAttemptValue = redisTemplate.opsForValue().get(failedAttemptKey);
-        String lastHourCountKey = "otp:count:lastHour"+request.email()+":"+request.otpPurpose();
 
-        long failedAttempt = 0;
-        if(failedAttemptValue != null){
-            failedAttempt = Long.parseLong(failedAttemptValue);
+        Long failedAttempt = redisTemplate.opsForValue().increment(failedAttemptKey);
+        Long attemptCountTTL = redisTemplate.getExpire(failedAttemptKey);// will return -1 if no TTL
+        if (attemptCountTTL == -1){ // if TTL is not set
+            redisTemplate.expire(failedAttemptKey, Duration.ofMinutes(60));
         }
 
-        if(failedAttempt >= 5){
+        if (failedAttempt == null){
+            log.error("OTP validation failed | reason: couldn't verify failed attempt count| email: {} | purpose: {}", request.email(), request.otpPurpose());
+            throw new ServiceException("OTP validation failed. Please try again later.");
+        }
+
+        if(failedAttempt > 5){
             log.warn("OTP validation failed | reason: Too many attempts | email: {} | purpose: {}", request.email(), request.otpPurpose());
             redisTemplate.delete(otpKey);
             throw new OtpValidateLimitExceededException("Too many attempts. Please try again later.");
@@ -99,29 +103,12 @@ public class OtpService {
         }
 
         if (!passwordEncoder.matches(request.otp(), otp)){
-            failedAttempt++;
-
-            if (failedAttempt == 1){
-                redisTemplate.opsForValue().set(failedAttemptKey, String.valueOf(1), Duration.ofMinutes(30));
-            }else if (failedAttempt >= 5){
-                log.warn("OTP validation failed | reason: Too many attempts | email: {} | purpose: {}", request.email(), request.otpPurpose());
-                redisTemplate.delete(otpKey);
-                throw new OtpValidateLimitExceededException("Too many attempts. Please try again later.");
-            }else {
-                long expireTime = redisTemplate.getExpire(failedAttemptKey, TimeUnit.MINUTES);
-                if(expireTime >= 1){
-                    redisTemplate.opsForValue().set(failedAttemptKey, String.valueOf(failedAttempt), Duration.ofMinutes(expireTime));
-                }else {
-                    redisTemplate.opsForValue().set(failedAttemptKey, String.valueOf(1), Duration.ofMinutes(30));
-                }
-            }
             log.warn("OTP validation failed | reason: Invalid OTP | email: {} | purpose: {}", request.email(), request.otpPurpose());
             throw new InvalidOtpException("Invalid OTP");
         }
 
         final String recentCountKey = "otp:count:recent"+request.email()+":"+request.otpPurpose();
         redisTemplate.delete(failedAttemptKey);
-        redisTemplate.delete(lastHourCountKey);
         redisTemplate.delete(recentCountKey);
         redisTemplate.delete(otpKey);
 
