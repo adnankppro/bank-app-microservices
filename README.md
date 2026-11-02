@@ -54,34 +54,17 @@ database transactions, and reliable communication between services.
 
 The application is divided into the following microservices:
 
-  -----------------------------------------------------------------------
-  Service                             Responsibility
-  ----------------------------------- -----------------------------------
-  **API Gateway**                     Entry point for client requests,
-                                      JWT validation, and request
-                                      routing.
-
-  **Eureka Server**                   Service registration and discovery.
-
-  **Authentication Service**          Login, registration workflows,
-                                      authentication, and token
-                                      management.
-
-  **OTP Service**                     OTP generation, verification,
-                                      storage, and rate limiting.
-
-  **User Profile Service**            User profile and user-related
-                                      operations.
-
-  **Branch Service**                  Branch information and management.
-
-  **Banking Service**                 Bank accounts, deposits, money
-                                      transfers, and transaction history.
-
-  **Notification Service**            Handling application notifications.
-
-  **Common Library**                  Shared components, DTOs, and
-                                      reusable application code.
+| Service | Responsibility |
+|---|---|
+| *API Gateway* | Entry point for client requests, JWT validation, and request routing. |
+| *Eureka Server* | Service registration and discovery. |
+| *Authentication Service* | Login, registration workflows, authentication, and token management. |
+| *OTP Service* | OTP generation, verification, storage, and rate limiting. |
+| *User Profile Service* | User profile and user-related operations. |
+| *Branch Service* | Branch information and management. |
+| *Banking Service* | Bank accounts, deposits, money transfers, and transaction history. |
+| *Notification Service* | Handling application notifications. |
+| *Common Library* | Shared components, DTOs, and reusable application code. |
   -----------------------------------------------------------------------
 
 ### Request Flow
@@ -95,23 +78,23 @@ to maintain consistency when performing financial operations.
 
 ## Technical Stack
 
-  Category                    Technologies
-  --------------------------- -----------------------------------------
-  Language                    Java 21
-  Framework                   Spring Boot 3.5.x
-  Microservices               Spring Cloud
-  API Gateway                 Spring Cloud Gateway
-  Service Discovery           Netflix Eureka
-  Security                    Spring Security, JWT
-  ORM                         Spring Data JPA, Hibernate
-  Database                    PostgreSQL
-  Caching and Rate Limiting   Redis
-  Messaging                   Apache Kafka
-  Service Communication       OpenFeign
-  Object Mapping              MapStruct
-  Build Tool                  Maven
-  Testing                     JUnit 5, Mockito
-  Containerization            Docker Compose for local infrastructure
+| Category | Technologies |
+|---|---|
+| **Language** | Java 21 |
+| **Framework** | Spring Boot 3.5.x |
+| **Microservices** | Spring Cloud |
+| **API Gateway** | Spring Cloud Gateway |
+| **Service Discovery** | Netflix Eureka |
+| **Security** | Spring Security, JWT |
+| **ORM** | Spring Data JPA, Hibernate |
+| **Database** | PostgreSQL |
+| **Caching and Rate Limiting** | Redis |
+| **Messaging** | Apache Kafka |
+| **Service Communication** | OpenFeign |
+| **Object Mapping** | MapStruct |
+| **Build Tool** | Maven |
+| **Testing** | JUnit 5, Mockito |
+| **Containerization** | Docker Compose (local infrastructure) |
 
 ## Security and Transaction Management
 
