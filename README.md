@@ -278,11 +278,12 @@ as development and testing continue.
 
 ## Future Improvements
 
--   Complete ticket management functionality.
--   Expand automated test coverage.
--   Add API documentation.
--   Improve local development and deployment setup.
--   Further strengthen error handling, logging, and observability.
+- Design and implement ticket management functionality.
+- Expand unit, integration, and concurrency test coverage.
+- Review and refactor existing code to improve readability and maintainability.
+- Add API documentation using Swagger/OpenAPI.
+- Improve logging and observability.
+- Enhance the local development and deployment setup.
 
 ## License
 
